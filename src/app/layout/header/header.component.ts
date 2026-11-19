@@ -25,11 +25,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   offline = this.system.offline;
   seenAt = this.system.seenAt;
   statusText = computed(() => {
-    if (this.offline()) return 'MẤT KẾT NỐI BACKEND';
+    if (this.offline()) return 'Mất kết nối máy chủ';
     const s = this.status();
-    if (!s) return 'ĐANG KẾT NỐI...';
-    if (s.ai_state === 'busy') return `ĐANG PHÂN TÍCH (${s.active_tasks})`;
-    return s.device.type === 'gpu' ? 'HỆ THỐNG ONLINE · GPU' : 'HỆ THỐNG ONLINE · CPU';
+    if (!s) return 'Đang kết nối';
+    if (s.ai_state === 'busy') return `Đang phân tích ${s.active_tasks} video`;
+    return s.device.type === 'gpu' ? 'Sẵn sàng · GPU' : 'Sẵn sàng · CPU';
   });
 
   private timer: any;

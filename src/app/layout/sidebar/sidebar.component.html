@@ -1,106 +1,80 @@
 <aside class="sidebar">
 
-  <div class="sidebar-section-label">GIÁM SÁT THỜI GIAN THỰC</div>
-
+  <div class="sidebar-section-label">Giám sát</div>
   <nav class="sidebar-nav">
-
     <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
-      <div class="nav-icon-box">
-        <i class="bi bi-grid-1x2-fill nav-icon"></i>
-      </div>
-      <span class="nav-text">Dashboard</span>
+      <i class="bi bi-grid-1x2 nav-icon"></i>
+      <span class="nav-text">Tổng quan</span>
     </a>
 
     <a routerLink="/admin/video-analysis" routerLinkActive="active" class="nav-item">
-      <div class="nav-icon-box">
-        <i class="bi bi-cloud-arrow-up-fill nav-icon"></i>
-      </div>
-      <span class="nav-text">Phân Tích Video</span>
-      <span class="nav-badge cyan-badge">AI VIDEO</span>
+      <i class="bi bi-cloud-arrow-up nav-icon"></i>
+      <span class="nav-text">Phân tích video</span>
     </a>
 
     <a routerLink="/admin/history" routerLinkActive="active" class="nav-item">
-      <div class="nav-icon-box">
-        <i class="bi bi-clock-history nav-icon"></i>
-      </div>
+      <i class="bi bi-clock-history nav-icon"></i>
       <span class="nav-text">Lịch sử phân tích</span>
       @if ((status()?.active_tasks ?? 0) > 0) {
-        <span class="nav-badge cyan-badge" title="Số lần phân tích đang chạy / chờ">{{ status()!.active_tasks }} ĐANG CHẠY</span>
+        <span class="nav-count mono" title="Số lần phân tích đang chạy hoặc chờ">{{ status()!.active_tasks }}</span>
       }
     </a>
 
     <a routerLink="/admin/violations" routerLinkActive="active" class="nav-item">
-      <div class="nav-icon-box">
-        <i class="bi bi-shield-exclamation nav-icon"></i>
-      </div>
-      <span class="nav-text">Violations</span>
+      <i class="bi bi-shield-exclamation nav-icon"></i>
+      <span class="nav-text">Vi phạm</span>
       @if (pendingReview() > 0) {
-        <span class="nav-badge alert-badge" [title]="pendingReview() + ' vi phạm đang chờ duyệt'">{{ pendingReview() > 99 ? '99+' : pendingReview() }}</span>
+        <span class="nav-count nav-count-alert mono" [title]="pendingReview() + ' vi phạm đang chờ duyệt'">{{ pendingReview() > 99 ? '99+' : pendingReview() }}</span>
       }
     </a>
-
   </nav>
 
-  <div class="sidebar-section-label">BÁO CÁO & PHÂN TÍCH</div>
-
+  <div class="sidebar-section-label">Báo cáo</div>
   <nav class="sidebar-nav">
-
     <a routerLink="/admin/statistics" routerLinkActive="active" class="nav-item">
-      <div class="nav-icon-box">
-        <i class="bi bi-graph-up-arrow nav-icon"></i>
-      </div>
-      <span class="nav-text">Statistics</span>
+      <i class="bi bi-graph-up nav-icon"></i>
+      <span class="nav-text">Thống kê</span>
     </a>
-
   </nav>
 
-  <div class="sidebar-section-label">DANH MỤC</div>
-
+  <div class="sidebar-section-label">Danh mục</div>
   <nav class="sidebar-nav">
-
     <a routerLink="/admin/locations" routerLinkActive="active" class="nav-item">
-      <div class="nav-icon-box">
-        <i class="bi bi-geo-alt-fill nav-icon"></i>
-      </div>
+      <i class="bi bi-geo-alt nav-icon"></i>
       <span class="nav-text">Địa điểm</span>
     </a>
 
     @if (isAdmin()) {
       <a routerLink="/admin/users" routerLinkActive="active" class="nav-item">
-        <div class="nav-icon-box">
-          <i class="bi bi-people-fill nav-icon"></i>
-        </div>
+        <i class="bi bi-people nav-icon"></i>
         <span class="nav-text">Tài khoản</span>
       </a>
     }
-
   </nav>
 
-  <!-- Sidebar Telemetry Card -->
+  <!-- Trạng thái máy phân tích -->
   <div class="sidebar-telemetry">
     <div class="telemetry-header">
-      <span class="telemetry-title"><i class="bi bi-cpu-fill"></i> AI ENGINE TELEMETRY</span>
-      <span class="telemetry-dot" [style.background]="stateLabel().color" [style.box-shadow]="'0 0 8px ' + stateLabel().color"></span>
+      <span class="telemetry-title">Máy phân tích</span>
+      <span class="telemetry-state">
+        <span class="telemetry-dot" [style.background]="stateLabel().color"></span>
+        {{ stateLabel().text }}
+      </span>
     </div>
 
     <div class="telemetry-row">
-      <span>Mô hình AI</span>
-      <strong>{{ modelLabel() }}</strong>
+      <span>Mô hình</span>
+      <strong class="mono">{{ modelLabel() }}</strong>
     </div>
 
     <div class="telemetry-row">
       <span>Thiết bị</span>
-      <strong [title]="status()?.device?.name ?? ''">{{ deviceLabel() }}</strong>
-    </div>
-
-    <div class="telemetry-row">
-      <span>Trạng thái</span>
-      <strong [style.color]="stateLabel().color">{{ stateLabel().text }}</strong>
+      <strong class="mono" [title]="status()?.device?.name ?? ''">{{ deviceLabel() }}</strong>
     </div>
 
     <div class="telemetry-row">
       <span>Tốc độ xử lý</span>
-      <strong title="Tốc độ của lần phân tích gần nhất (khung hình / giây)">{{ fpsLabel() }}</strong>
+      <strong class="mono" title="Tốc độ của lần phân tích gần nhất (khung hình / giây)">{{ fpsLabel() }}</strong>
     </div>
   </div>
 

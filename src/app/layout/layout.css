@@ -1,11 +1,18 @@
 .app-layout {
   display: flex;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 56px);
 }
 
 .main-content {
   flex: 1;
-  padding: 24px;
-  background-color: var(--bg-dark-base);
+  min-width: 0;
+  padding: 24px 32px 48px;
+  background-color: var(--bg);
   overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .main-content {
+    padding: 16px;
+  }
 }

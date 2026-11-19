@@ -30,12 +30,12 @@ export class SidebarComponent {
     return m ? `YOLO · ${m.available}/${m.total} mô hình` : '—';
   });
   stateLabel = computed(() => {
-    if (this.offline()) return { text: 'MẤT KẾT NỐI', color: '#fb7185' };
+    if (this.offline()) return { text: 'Mất kết nối', color: '#e5484d' };
     const s = this.status();
-    if (!s) return { text: 'ĐANG KẾT NỐI...', color: '#94a3b8' };
-    if (s.ai_state === 'busy') return { text: `ĐANG PHÂN TÍCH (${s.active_tasks})`, color: '#60a5fa' };
-    if (s.ai_state === 'degraded') return { text: 'THIẾU MÔ HÌNH', color: '#fbbf24' };
-    return { text: 'AI SẴN SÀNG', color: '#00e650' };
+    if (!s) return { text: 'Đang kết nối', color: '#7d828f' };
+    if (s.ai_state === 'busy') return { text: `Đang phân tích ${s.active_tasks}`, color: '#e2a336' };
+    if (s.ai_state === 'degraded') return { text: 'Thiếu mô hình', color: '#e2a336' };
+    return { text: 'Sẵn sàng', color: '#4cc38a' };
   });
   fpsLabel = computed(() => {
     const f = this.status()?.last_processing_fps;

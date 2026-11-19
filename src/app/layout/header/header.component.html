@@ -1,16 +1,15 @@
 <header class="header">
-  
+
   <div class="header-left">
-    <div class="logo">
-      <div class="logo-img-wrapper">
-        <span class="logo-pulse"></span>
-        <img src="traffic-ai-logo.png" alt="Traffic AI Logo" class="brand-logo-img">
-      </div>
-      <div class="logo-text">
-        <span class="brand-title">TRAFFIC <span class="brand-highlight">AI</span></span>
-        <span class="brand-sub">CENTER CONTROL v2.4</span>
-      </div>
-    </div>
+    <a routerLink="/admin/dashboard" class="logo" aria-label="Traffic AI">
+      <svg class="logo-mark" viewBox="0 0 16 24" aria-hidden="true">
+        <rect x="1" y="1" width="14" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <circle cx="8" cy="6.5" r="2.25" fill="currentColor" />
+        <circle cx="8" cy="12" r="2.25" fill="currentColor" opacity="0.35" />
+        <circle cx="8" cy="17.5" r="2.25" fill="currentColor" opacity="0.35" />
+      </svg>
+      <span class="brand-title">Traffic AI</span>
+    </a>
 
     <div class="system-status" [class.offline]="offline()" [class.busy]="status()?.ai_state === 'busy'"
          [title]="status() ? ('Thiết bị AI: ' + status()!.device.name + ' · CSDL: ' + status()!.database) : ''">
@@ -21,90 +20,76 @@
 
   <div class="header-right">
 
-    <!-- Digital Clock Widget -->
-    <div class="clock-widget">
-      <span class="clock-time"><i class="bi bi-clock-fill"></i> {{ currentTime }}</span>
+    <div class="clock-widget mono" aria-label="Thời gian hiện tại">
+      <span class="clock-time">{{ currentTime }}</span>
       <span class="clock-date">{{ currentDate }}</span>
     </div>
 
-    <!-- Notification Button & Dropdown -->
+    <!-- Thông báo -->
     <div class="notification-container">
-      <button class="notification-btn" (click)="toggleNotifications()" title="Thông báo hệ thống">
-        <i class="bi bi-bell-fill bell-icon"></i>
+      <button class="icon-btn" (click)="toggleNotifications()" title="Thông báo" aria-label="Thông báo">
+        <i class="bi bi-bell"></i>
         @if (unreadCount > 0) {
-          <span class="badge-counter">{{ unreadCount }}</span>
+          <span class="badge-counter mono">{{ unreadCount }}</span>
         }
       </button>
 
       @if (showNotifications) {
         <div class="notifications-dropdown">
           <div class="dropdown-header">
-            <h4><i class="bi bi-bell-fill"></i> Thông báo hệ thống</h4>
-            <button class="mark-read-btn" (click)="markAllAsRead()">Đã đọc tất cả</button>
+            <h4>Thông báo</h4>
+            <button class="mark-read-btn" (click)="markAllAsRead()">Đánh dấu đã đọc</button>
           </div>
 
           <div class="notification-list">
             @for (item of notifications(); track item.id) {
               <button type="button" class="notification-item" [class.unread]="isUnread(item)" (click)="open(item)">
-                <div class="notification-icon" [class.alert]="item.type === 'alert'" [class.offline]="item.type === 'error'">
-                  @if (item.type === 'alert') { <i class="bi bi-shield-exclamation text-rose"></i> }
-                  @else if (item.type === 'error') { <i class="bi bi-x-octagon-fill text-amber"></i> }
-                  @else { <i class="bi bi-check-circle-fill text-cyan"></i> }
-                </div>
+                <span class="notification-dot" [class.alert]="item.type === 'alert'" [class.error]="item.type === 'error'"></span>
                 <div class="notification-content">
                   <strong>{{ item.title }}</strong>
                   <p>{{ item.text }}</p>
-                  <small>{{ timeAgo(item) }}</small>
+                  <small class="mono">{{ timeAgo(item) }}</small>
                 </div>
               </button>
             } @empty {
               <div class="notification-empty">
-                <i class="bi bi-bell-slash"></i>
-                {{ offline() ? 'Không kết nối được tới máy chủ' : 'Chưa có thông báo nào' }}
+                {{ offline() ? 'Không kết nối được tới máy chủ' : 'Chưa có thông báo' }}
               </div>
             }
-          </div>
-
-          <div class="dropdown-footer">
-            <span class="footer-note"><i class="bi bi-cpu"></i> Hệ thống AI tự động ghi nhận</span>
           </div>
         </div>
       }
     </div>
 
-    <!-- User Profile Dropdown -->
+    <!-- Tài khoản -->
     <div class="user-container">
-      <div class="user" (click)="toggleUserMenu()">
-        <div class="user-avatar">
-          <span>{{ userInitial() }}</span>
-          <span class="avatar-online"></span>
-        </div>
-        <div class="user-info">
+      <button type="button" class="user" (click)="toggleUserMenu()" aria-label="Tài khoản">
+        <span class="user-avatar">{{ userInitial() }}</span>
+        <span class="user-info">
           <span class="user-name">{{ user()?.full_name }}</span>
           <span class="user-role">{{ roleLabel() }}</span>
-        </div>
+        </span>
         <i class="bi bi-chevron-down user-arrow"></i>
-      </div>
+      </button>
 
       @if (showUserMenu) {
         <div class="user-menu">
-          <div class="menu-item" style="cursor: default;">
-            <strong style="display: block; color: #f8fafc;">{{ user()?.full_name }}</strong>
-            <small style="display: block; margin-top: 2px; opacity: 0.7; word-break: break-all;">{{ user()?.email }}</small>
+          <div class="menu-identity">
+            <strong>{{ user()?.full_name }}</strong>
+            <small>{{ user()?.email }}</small>
           </div>
           <div class="menu-divider"></div>
           <a class="menu-item" routerLink="/admin/account" (click)="showUserMenu = false">
-            <i class="bi bi-key-fill"></i> Tài khoản & đổi mật khẩu
+            <i class="bi bi-key"></i> Tài khoản và mật khẩu
           </a>
           @if (user()?.role === 'admin') {
             <a class="menu-item" routerLink="/admin/users" (click)="showUserMenu = false">
-              <i class="bi bi-people-fill"></i> Quản lý tài khoản
+              <i class="bi bi-people"></i> Quản lý tài khoản
             </a>
           }
           <div class="menu-divider"></div>
-          <button type="button" class="menu-item logout" (click)="logout()" [disabled]="loggingOut"
-                  style="width: 100%; background: none; border: none; text-align: left; font: inherit; cursor: pointer;">
-            <i class="bi bi-box-arrow-right"></i> {{ loggingOut ? 'Đang đăng xuất...' : 'Đăng xuất' }}
+          <button type="button" class="menu-item logout" (click)="logout()" [disabled]="loggingOut">
+            <i class="bi bi-box-arrow-right"></i> {{ loggingOut ? 'Đang đăng xuất' : 'Đăng xuất' }}
           </button>
         </div>
       }

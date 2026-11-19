@@ -17,6 +17,12 @@ export class Statistics implements OnInit {
   summary: StatisticsSummary | null = null;
   loading = true;
 
+  /** Chiều cao cột theo ngày (% so với ngày nhiều vi phạm nhất). */
+  barHeight(count: number): number {
+    const max = Math.max(1, ...(this.summary?.byDate ?? []).map((d) => d.count));
+    return Math.max(2, Math.round((count / max) * 100));
+  }
+
   ngOnInit(): void {
     this.loadStatistics();
   }

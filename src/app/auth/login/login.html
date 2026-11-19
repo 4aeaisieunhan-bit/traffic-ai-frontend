@@ -1,10 +1,15 @@
-<div class="login-page">
+<div class="auth-page">
 
-  <form class="login-card" (ngSubmit)="login()" novalidate>
+  <form class="auth-card" (ngSubmit)="login()" novalidate>
 
     <!-- Logo -->
-    <a class="logo" routerLink="/">
-      <img src="traffic-ai-logo.png" alt="Traffic AI Logo" class="auth-logo-img">
+    <a class="logo" routerLink="/" aria-label="Traffic AI — về trang chủ">
+      <svg class="logo-mark" viewBox="0 0 16 24" aria-hidden="true">
+        <rect x="1" y="1" width="14" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <circle cx="8" cy="6.5" r="2.25" fill="currentColor" />
+        <circle cx="8" cy="12" r="2.25" fill="currentColor" opacity="0.35" />
+        <circle cx="8" cy="17.5" r="2.25" fill="currentColor" opacity="0.35" />
+      </svg>
       <span>Traffic AI</span>
     </a>
 
@@ -63,23 +68,23 @@
         <input type="checkbox" name="remember" [(ngModel)]="remember" [disabled]="loading()">
         <span>Ghi nhớ đăng nhập (30 ngày)</span>
       </label>
-      <a href="#" (click)="$event.preventDefault(); showForgot = !showForgot">Quên mật khẩu?</a>
+      <a href="#" (click)="$event.preventDefault(); showForgot = !showForgot">Quên mật khẩu</a>
     </div>
 
     @if (showForgot) {
       <div class="auth-alert info" role="status">
         Vui lòng liên hệ <strong>quản trị viên</strong> để được cấp mật khẩu tạm.
-        Sau khi đăng nhập, hãy vào <strong>Tài khoản &amp; đổi mật khẩu</strong> để đặt mật khẩu mới.
+        Sau khi đăng nhập, hãy vào <strong>Tài khoản và mật khẩu</strong> để đặt mật khẩu mới.
       </div>
     }
 
     <!-- Login button -->
-    <button class="login-btn" type="submit" [disabled]="loading()">
-      {{ loading() ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+    <button class="submit-btn" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Đang đăng nhập' : 'Đăng nhập' }}
     </button>
 
     <!-- Register -->
-    <div class="register">
+    <div class="switch">
       <span>Chưa có tài khoản?</span>
       <a routerLink="/register">Đăng ký</a>
     </div>

@@ -1,231 +1,65 @@
-.register-page {
+/* Trang xác thực (dùng chung cho đăng nhập và đăng ký) — nền tối, thống nhất với trang chủ */
+.auth-page {
   min-height: 100vh;
-
+  padding: 64px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background-color: #f3f4f6;
-
-  padding: 20px;
+  background: var(--bg);
 }
 
-
-/* =========================
-   REGISTER CARD
-========================= */
-
-.register-card {
+.auth-card {
   width: 100%;
-  max-width: 420px;
-
-  background-color: #ffffff;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-
-  padding: 36px;
-
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-width: 400px;
+  padding: 32px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
 }
-
-
-/* =========================
-   LOGO
-========================= */
 
 .logo {
-  text-align: center;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-
-  font-size: 24px;
-  font-weight: 700;
-
-  color: #2563eb;
-
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  color: var(--t1);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
 }
 
-.auth-logo-img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
+.logo-mark {
+  width: 12px;
+  height: 18px;
 }
 
-
-/* =========================
-   TITLE
-========================= */
-
-.register-card h1 {
-  margin: 0;
-
-  text-align: center;
-
+.auth-card h1 {
   font-size: 24px;
-
-  color: #111827;
+  line-height: 32px;
+  font-weight: 500;
 }
 
 .subtitle {
-  margin: 8px 0 26px;
-
-  text-align: center;
-
-  color: #6b7280;
-
+  margin: 8px 0 24px;
+  color: var(--t2);
   font-size: 14px;
-
-  line-height: 1.5;
+  line-height: 20px;
 }
 
-
-/* =========================
-   FORM
-========================= */
-
 .form-group {
-  margin-bottom: 17px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-
-  margin-bottom: 7px;
-
-  font-size: 14px;
-
-  font-weight: 500;
-
-  color: #374151;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--t2);
 }
 
 .form-group input {
   width: 100%;
-
-  box-sizing: border-box;
-
-  padding: 11px 12px;
-
-  border: 1px solid #d1d5db;
-
-  border-radius: 8px;
-
-  font-size: 14px;
-
-  outline: none;
-}
-
-.form-group input:focus {
-  border-color: #2563eb;
-}
-
-
-/* =========================
-   REGISTER BUTTON
-========================= */
-
-.register-btn {
-  width: 100%;
-
-  padding: 12px;
-
-  margin-top: 4px;
-
-  border: none;
-
-  border-radius: 8px;
-
-  background-color: #2563eb;
-
-  color: #ffffff;
-
-  font-size: 15px;
-
-  font-weight: 600;
-
-  cursor: pointer;
-}
-
-.register-btn:hover {
-  background-color: #1d4ed8;
-}
-
-
-/* =========================
-   LOGIN LINK
-========================= */
-
-.login-link {
-  display: flex;
-
-  justify-content: center;
-
-  gap: 5px;
-
-  margin-top: 22px;
-
-  font-size: 14px;
-
-  color: #6b7280;
-}
-
-.login-link a {
-  color: #2563eb;
-
-  text-decoration: none;
-
-  font-weight: 500;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
-}
-
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 480px) {
-
-  .register-page {
-    padding: 16px;
-  }
-
-  .register-card {
-    padding: 28px 22px;
-  }
-
-}
-
-
-/* ===== Trạng thái đăng nhập / đăng ký ===== */
-a.logo {
-  text-decoration: none;
-}
-
-.auth-alert {
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.4;
-  margin-bottom: 16px;
-}
-
-.auth-alert.error {
-  background: #fff1f2;
-  border: 1px solid #fecdd3;
-  color: #be123c;
-}
-
-.auth-alert.info {
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #047857;
+  height: 40px;
 }
 
 .password-field {
@@ -233,39 +67,122 @@ a.logo {
 }
 
 .password-field input {
-  width: 100%;
   padding-right: 44px;
-  box-sizing: border-box;
 }
 
 .toggle-password {
   position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 2px;
+  right: 2px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   background: transparent;
-  border: none;
-  color: #64748b;
-  cursor: pointer;
-  padding: 6px 8px;
+  color: var(--t3);
   font-size: 16px;
 }
 
 .toggle-password:hover {
-  color: #1e293b;
+  color: var(--t1);
+}
+
+.toggle-password:active:not(:disabled) {
+  transform: none;
 }
 
 .field-hint {
   display: block;
-  margin-top: 6px;
+  margin-top: 8px;
   font-size: 12px;
 }
 
 .field-hint.error {
-  color: #be123c;
+  color: #f0777b;
 }
 
-button[type="submit"]:disabled {
+.form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 0 24px;
+  font-size: 13px;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--t2);
+  cursor: pointer;
+}
+
+.remember input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.form-options a,
+.switch a {
+  color: var(--t1);
+  text-decoration: none;
+}
+
+.form-options a:hover,
+.switch a:hover {
+  text-decoration: underline;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  background: var(--t1);
+  color: var(--bg);
+  font-size: 15px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #ffffff;
+}
+
+.submit-btn:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+.switch {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--t2);
+}
+
+.auth-alert {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.auth-alert strong {
+  font-weight: 500;
+}
+
+.auth-alert.error {
+  background: rgba(229, 72, 77, 0.1);
+  border: 1px solid rgba(229, 72, 77, 0.22);
+  color: #f0a3a6;
+}
+
+.auth-alert.info {
+  background: var(--raised);
+  border: 1px solid var(--line);
+  color: var(--t2);
 }

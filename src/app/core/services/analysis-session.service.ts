@@ -74,9 +74,9 @@ export class AnalysisSessionService {
       case 'analyzing':
         if (!s) return 'Đang tạo tác vụ phân tích...';
         if (s.status === 'pending') return 'Đang chờ trong hàng đợi (máy chủ đang xử lý video khác)...';
-        if (!s.current_frame) return 'Đang khởi động 6 mô hình AI (lần đầu sau khi bật backend có thể mất 1–2 phút)...';
+        if (!s.current_frame) return 'Đang khởi động các mô hình AI (lần đầu sau khi bật backend có thể mất 1–2 phút)...';
         return 'AI đang phân tích từng khung hình: nhận diện xe, đèn tín hiệu, vạch dừng, biển số...';
-      case 'completed': return 'Phân tích hoàn tất!';
+      case 'completed': return 'Phân tích hoàn tất';
       case 'failed': return this.cancelled() ? 'Đã huỷ phân tích' : 'Phân tích thất bại';
       default: return '';
     }
@@ -267,8 +267,8 @@ export class AnalysisSessionService {
   /** % hiện trên tab trình duyệt ở MỌI trang, để làm việc khác vẫn theo dõi được. */
   private updateTitle(): void {
     if (this.isBusy()) this.title.setTitle(`(${Math.floor(this.displayPercent())}%) Đang phân tích video – ${APP_TITLE}`);
-    else if (this.phase() === 'completed') this.title.setTitle(`✅ Phân tích xong – ${APP_TITLE}`);
-    else if (this.phase() === 'failed') this.title.setTitle(`❌ ${this.cancelled() ? 'Đã huỷ phân tích' : 'Phân tích thất bại'} – ${APP_TITLE}`);
+    else if (this.phase() === 'completed') this.title.setTitle(`Phân tích xong – ${APP_TITLE}`);
+    else if (this.phase() === 'failed') this.title.setTitle(`${this.cancelled() ? 'Đã huỷ phân tích' : 'Phân tích thất bại'} – ${APP_TITLE}`);
     else this.title.setTitle(this.baseTitle);
   }
 }

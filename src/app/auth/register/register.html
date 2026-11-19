@@ -1,14 +1,19 @@
-<div class="register-page">
+<div class="auth-page">
 
-  <form class="register-card" (ngSubmit)="register()" novalidate>
+  <form class="auth-card" (ngSubmit)="register()" novalidate>
 
     <!-- Logo -->
-    <a class="logo" routerLink="/">
-      <img src="traffic-ai-logo.png" alt="Traffic AI Logo" class="auth-logo-img">
+    <a class="logo" routerLink="/" aria-label="Traffic AI — về trang chủ">
+      <svg class="logo-mark" viewBox="0 0 16 24" aria-hidden="true">
+        <rect x="1" y="1" width="14" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <circle cx="8" cy="6.5" r="2.25" fill="currentColor" />
+        <circle cx="8" cy="12" r="2.25" fill="currentColor" opacity="0.35" />
+        <circle cx="8" cy="17.5" r="2.25" fill="currentColor" opacity="0.35" />
+      </svg>
       <span>Traffic AI</span>
     </a>
 
-    <h1>Đăng ký tài khoản</h1>
+    <h1>Tạo tài khoản</h1>
 
     <p class="subtitle">
       Tạo tài khoản cán bộ để sử dụng hệ thống giám sát giao thông
@@ -60,11 +65,11 @@
       }
     </div>
 
-    <button class="register-btn" type="submit" [disabled]="loading()">
-      {{ loading() ? 'Đang tạo tài khoản...' : 'Đăng ký' }}
+    <button class="submit-btn" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Đang tạo tài khoản' : 'Đăng ký' }}
     </button>
 
-    <div class="login-link">
+    <div class="switch">
       <span>Đã có tài khoản?</span>
       <a routerLink="/login">Đăng nhập</a>
     </div>

@@ -2,10 +2,10 @@
 
   <div class="page-header">
     <div>
-      <h1 class="page-title"><i class="bi bi-clock-history text-cyan"></i> Lịch Sử Phân Tích</h1>
-      <p class="page-subtitle">Tất cả các lần phân tích video AI: tiến độ, kết quả, huỷ lần đang chạy và xoá dữ liệu cũ.</p>
+      <h1 class="page-title">Lịch sử phân tích</h1>
+      <p class="page-subtitle">Tiến độ và kết quả của từng lần phân tích video</p>
     </div>
-    <div class="header-actions">
+    <div class="page-actions">
       <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="changeFilter()" aria-label="Lọc theo trạng thái">
         <option value="">Tất cả trạng thái</option>
         @for (s of statusOptions; track s) {
@@ -15,15 +15,15 @@
       <button class="btn btn-secondary" (click)="load()" [disabled]="loading">
         <i class="bi bi-arrow-clockwise"></i> Làm mới
       </button>
-      <a class="btn btn-primary" routerLink="/admin/video-analysis"><i class="bi bi-cloud-arrow-up-fill"></i> Phân tích video mới</a>
+      <a class="btn btn-primary" routerLink="/admin/video-analysis"><i class="bi bi-cloud-arrow-up"></i> Phân tích video mới</a>
     </div>
   </div>
 
   @if (errorMessage) {
-    <div class="alert alert-error"><i class="bi bi-x-octagon-fill"></i> {{ errorMessage }}</div>
+    <div class="inline-alert" role="alert"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
   }
   @if (successMessage) {
-    <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> {{ successMessage }}</div>
+    <div class="success-alert" role="status"><i class="bi bi-check2"></i> {{ successMessage }}</div>
   }
 
   <div class="panel">
@@ -31,31 +31,31 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>VIDEO</th>
-            <th>ĐỊA ĐIỂM</th>
-            <th>TRẠNG THÁI</th>
-            <th class="num">VI PHẠM</th>
-            <th class="num">PHƯƠNG TIỆN</th>
-            <th>THỜI GIAN XỬ LÝ</th>
-            <th>BẮT ĐẦU</th>
-            <th class="actions">THAO TÁC</th>
+            <th>Video</th>
+            <th>Địa điểm</th>
+            <th>Trạng thái</th>
+            <th class="num">Vi phạm</th>
+            <th class="num">Phương tiện</th>
+            <th>Thời gian xử lý</th>
+            <th>Bắt đầu</th>
+            <th class="actions"></th>
           </tr>
         </thead>
         <tbody>
           @for (t of tasks; track t.task_id) {
             <tr>
               <td>
-                <strong class="video-name" [title]="t.video_name ?? ''">{{ t.video_name ?? '—' }}</strong>
-                <div class="muted mono">#{{ t.task_id }}</div>
+                <span class="video-name" [title]="t.video_name ?? ''">{{ t.video_name ?? '—' }}</span>
+                <div class="muted mono-text small">#{{ t.task_id }}</div>
               </td>
               <td class="muted">{{ t.location ?? '—' }}</td>
               <td>
-                <span class="task-status" [attr.data-status]="t.status">{{ labels[t.status] }}</span>
+                <span class="task-status dot-status" [attr.data-status]="t.status">{{ labels[t.status] }}</span>
                 @if (t.status === 'processing' || t.status === 'pending') {
                   <div class="mini-progress" [attr.aria-label]="'Tiến độ ' + t.progress + '%'">
                     <span [style.width.%]="t.progress"></span>
                   </div>
-                  <div class="muted small">{{ t.progress | number: '1.0-1' }}% · {{ t.current_frame ?? 0 }}/{{ t.total_frames ?? 0 }} khung hình</div>
+                  <div class="muted small mono-text">{{ t.progress | number: '1.0-1' }}% · {{ t.current_frame ?? 0 }}/{{ t.total_frames ?? 0 }} khung hình</div>
                 }
                 @if (t.status === 'failed' && t.error) {
                   <div class="error-text" [title]="t.error">{{ t.error }}</div>
@@ -69,17 +69,17 @@
                 }
               </td>
               <td class="num">{{ t.status === 'completed' ? (t.vehicles_scanned ?? 0) : '—' }}</td>
-              <td class="muted">{{ duration(t) }}</td>
-              <td class="muted">{{ t.created_at | date: 'HH:mm dd/MM/yyyy' }}</td>
+              <td class="muted mono-text">{{ duration(t) }}</td>
+              <td class="muted mono-text">{{ t.created_at | date: 'HH:mm dd/MM/yyyy' }}</td>
               <td class="actions">
                 @if (t.status === 'completed' && t.output_video_url) {
                   <a class="icon-btn" [href]="staticUrl + t.output_video_url" target="_blank" rel="noopener" title="Xem video kết quả">
-                    <i class="bi bi-play-btn-fill"></i>
+                    <i class="bi bi-play-btn"></i>
                   </a>
                 }
                 @if (t.status === 'pending' || t.status === 'processing') {
                   <button class="icon-btn warn" (click)="cancel(t)" [disabled]="busyId === t.task_id" title="Huỷ phân tích">
-                    <i class="bi bi-stop-circle"></i> Huỷ
+                    Hủy
                   </button>
                 } @else if (isAdmin()) {
                   <button class="icon-btn danger" (click)="remove(t)" [disabled]="busyId === t.task_id" title="Xoá lần phân tích và toàn bộ kết quả">
@@ -91,8 +91,8 @@
           } @empty {
             <tr>
               <td colspan="8" class="empty">
-                @if (loading) { Đang tải... }
-                @else { Chưa có lần phân tích nào{{ statusFilter ? ' với trạng thái này' : '' }}. }
+                @if (loading) { Đang tải }
+                @else { Chưa có lần phân tích nào{{ statusFilter ? ' với trạng thái này' : '' }} }
               </td>
             </tr>
           }
@@ -102,7 +102,7 @@
 
     @if (pageCount > 1) {
       <div class="pager">
-        <span class="muted">{{ total }} lần phân tích · trang {{ page + 1 }}/{{ pageCount }}</span>
+        <span class="muted mono-text">{{ total }} lần phân tích · trang {{ page + 1 }}/{{ pageCount }}</span>
         <div>
           <button class="icon-btn" (click)="goTo(page - 1)" [disabled]="page === 0" aria-label="Trang trước"><i class="bi bi-chevron-left"></i></button>
           <button class="icon-btn" (click)="goTo(page + 1)" [disabled]="page >= pageCount - 1" aria-label="Trang sau"><i class="bi bi-chevron-right"></i></button>

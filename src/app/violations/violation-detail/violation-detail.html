@@ -1,294 +1,171 @@
 <div class="detail-page" *ngIf="violation">
 
-  <!-- PAGE HEADER -->
+  <a class="back-link" routerLink="/admin/violations"><i class="bi bi-arrow-left"></i> Danh sách vi phạm</a>
+
   <div class="page-header">
     <div>
-      <h1 class="page-title"><i class="bi bi-file-earmark-text-fill text-amber"></i> Hồ Sơ Chi Tiết Vi Phạm #{{ violation.violation_code }}</h1>
-      <p class="page-subtitle">Kiểm chứng hình ảnh, thông tin phương tiện & trích xuất kết quả nhận diện AI từ video output.mp4</p>
+      <h1 class="page-title">Hồ sơ <span class="mono-text">{{ violation.violation_code }}</span></h1>
+      <p class="page-subtitle detail-status">
+        <span class="dot-status"
+              [class.is-confirmed]="violation.status === 'Đã xác nhận'"
+              [class.is-pending]="violation.status === 'Chưa xử lý'"
+              [class.is-rejected]="violation.status === 'Từ chối'">{{ violation.status }}</span>
+        <span class="muted">·</span>
+        <span>{{ violation.violation_type }}</span>
+      </p>
     </div>
-
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-      @if (isAdmin()) {
-        <button type="button" class="btn btn-danger" (click)="deleteRecord()" [disabled]="deleting" title="Xoá hồ sơ (VD: AI nhận nhầm)">
-          <i class="bi bi-trash3"></i> {{ deleting ? 'Đang xoá...' : 'Xoá hồ sơ' }}
+    @if (isAdmin()) {
+      <div class="page-actions">
+        <button type="button" class="btn btn-secondary delete-btn" (click)="deleteRecord()" [disabled]="deleting" title="Xóa hồ sơ, ví dụ khi AI nhận nhầm">
+          <i class="bi bi-trash3"></i> {{ deleting ? 'Đang xóa' : 'Xóa hồ sơ' }}
         </button>
-      }
-      <a class="btn btn-secondary back-btn" routerLink="/admin/violations">
-        <i class="bi bi-arrow-left"></i> Quay lại danh sách
-      </a>
-    </div>
+      </div>
+    }
   </div>
 
   @if (actionMessage) {
-    <div style="background: rgba(0, 230, 80, 0.15); border: 1px solid #00e650; color: #00e650; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
-      <i class="bi bi-check-circle-fill"></i> {{ actionMessage }}
-    </div>
+    <div class="success-alert" role="status"><i class="bi bi-check2"></i> {{ actionMessage }}</div>
   }
 
-  <!-- STATUS BANNER -->
-  <div class="status-card">
-    <div class="status-left">
-      <div class="status-icon-glow"><i class="bi bi-exclamation-diamond-fill"></i></div>
-      <div>
-        <span class="status-label">TRẠNG THÁI VI PHẠM</span>
-        <h2 [class.green-text]="violation.status === 'Đã xác nhận'" [class.amber-text]="violation.status === 'Chưa xử lý'" [class.rose-text]="violation.status === 'Từ chối'">
-          {{ violation.status }}
-        </h2>
-      </div>
-    </div>
-
-    <div class="violation-id">
-      Mã hồ sơ: <strong>{{ violation.violation_code }}</strong>
-    </div>
-  </div>
-
-
-  <!-- MAIN GRID -->
   <div class="detail-grid">
 
-    <!-- EVIDENCE SNAPSHOT CARD -->
-    <div class="card evidence-card">
-      <div class="card-header">
+    <!-- Bằng chứng -->
+    <section class="panel evidence-panel">
+      <div class="panel-header">
         <div>
-          <h3><i class="bi bi-image-fill text-blue"></i> Bằng Chứng Hình Ảnh Ghi Nhận Thực Tế</h3>
-          <p>Ảnh chụp khung hình vi phạm trích xuất trực tiếp từ video AI (Mốc: {{ violation.video_time }})</p>
+          <h3>Ảnh hiện trường</h3>
+          <p>Khung hình trích từ video tại mốc <span class="mono-text">{{ violation.video_time }}</span></p>
         </div>
+        @if (violation.evidence_image) {
+          <div class="page-actions">
+            <a [href]="staticUrl + violation.evidence_image" target="_blank" class="action-btn" title="Mở ảnh gốc"><i class="bi bi-arrows-angle-expand"></i> Ảnh gốc</a>
+            <a [href]="staticUrl + violation.evidence_image" download class="action-btn"><i class="bi bi-download"></i> Tải về</a>
+          </div>
+        }
       </div>
 
-      <div class="evidence-large-screen" style="position: relative; overflow: hidden; border-radius: 8px; background: #000;">
+      <div class="evidence-frame">
         @if (violation.evidence_image) {
-          <img 
-            [src]="staticUrl + violation.evidence_image" 
-            alt="Bằng chứng vi phạm" 
-            style="width: 100%; height: auto; display: block; object-fit: contain;"
-          />
+          <img [src]="staticUrl + violation.evidence_image" alt="Ảnh hiện trường vi phạm" />
         } @else {
-          <div style="padding: 100px 20px; text-align: center; color: #8a8898;">
-            <i class="bi bi-camera-reels" style="font-size: 48px;"></i>
-            <p>Không có hình ảnh snapshot cho hồ sơ này</p>
-          </div>
+          <div class="empty-state"><i class="bi bi-camera-reels"></i> Hồ sơ này không có ảnh hiện trường</div>
         }
-
-        <div class="evidence-watermark">
-          <span>{{ (violation.video_source || 'TRAFFIC AI') | uppercase }} | {{ violation.date_str }} {{ violation.time_str }} ({{ violation.video_time }})</span>
+        <div class="evidence-caption mono-text">
+          {{ violation.video_source || 'Traffic AI' }} · {{ violation.date_str }} {{ violation.time_str }} · {{ violation.video_time }}
         </div>
       </div>
 
-      <!-- Ảnh cận cảnh người vi phạm (lỗi không đội mũ bảo hiểm) -->
-      @if (violation.subject_crop_image) {
-        <div class="subject-crop-bar">
-          <a [href]="staticUrl + violation.subject_crop_image" target="_blank" class="subject-crop-link" title="Xem ảnh gốc">
-            <img [src]="staticUrl + violation.subject_crop_image" alt="Ảnh cận cảnh người vi phạm" />
-          </a>
-          <div class="subject-crop-info">
-            <span class="subject-crop-title"><i class="bi bi-person-bounding-box"></i> ẢNH CẬN CẢNH NGƯỜI VI PHẠM</span>
-            <p>Phần đầu không đội mũ bảo hiểm được khoanh đỏ. Ảnh cắt từ khung hình lúc AI kết luận vi phạm.</p>
-            <div class="subject-crop-meta">
-              <span>Độ tin cậy nhận diện: <strong>{{ violation.confidence_violation | pct }}</strong></span>
-              <a [href]="staticUrl + violation.subject_crop_image" download class="btn btn-secondary action-btn">
-                <i class="bi bi-download"></i> Tải ảnh cận cảnh
-              </a>
+      <div class="crops">
+        @if (violation.subject_crop_image) {
+          <div class="crop-item">
+            <a [href]="staticUrl + violation.subject_crop_image" target="_blank" class="crop-subject" title="Mở ảnh gốc">
+              <img [src]="staticUrl + violation.subject_crop_image" alt="Ảnh cận cảnh người vi phạm" />
+            </a>
+            <div class="crop-info">
+              <span class="crop-title">Ảnh cận cảnh người vi phạm</span>
+              <p>Phần đầu không đội mũ được khoanh lại, cắt từ khung hình lúc hệ thống kết luận vi phạm</p>
+              <div class="crop-meta">
+                <span>Độ tin cậy <strong class="mono-text">{{ violation.confidence_violation | pct }}</strong></span>
+                <a [href]="staticUrl + violation.subject_crop_image" download class="action-btn"><i class="bi bi-download"></i> Tải về</a>
+              </div>
             </div>
           </div>
-        </div>
-      }
+        }
 
-      <!-- Plate Crop Bar -->
-      @if (violation.plate_crop_image) {
-        <div style="margin-top: 14px; padding: 12px; background: #161420; border-radius: 8px; display: flex; align-items: center; gap: 16px; border: 1px solid #2a2538;">
-          <span style="font-size: 13px; color: #00d7ff; font-weight: 600;">ẢNH CROP BIỂN SỐ 4K:</span>
-          <img [src]="staticUrl + violation.plate_crop_image" alt="Biển số crop" style="height: 52px; border: 1px solid #00d7ff; border-radius: 4px;" />
+        @if (violation.plate_crop_image) {
+          <div class="crop-item">
+            <img class="crop-plate" [src]="staticUrl + violation.plate_crop_image" alt="Ảnh cắt biển số" />
+            <div class="crop-info">
+              <span class="crop-title">Ảnh cắt biển số</span>
+              <div class="crop-meta">
+                <span class="plate-tag">{{ violation.license_plate }}</span>
+                <span>OCR <strong class="mono-text">{{ violation.confidence_plate | pct }}</strong></span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <div class="side-col">
+      <!-- Phương tiện -->
+      <section class="panel">
+        <div class="panel-header"><h3>Phương tiện</h3></div>
+        <dl class="info-list">
+          <div class="info-row"><dt>Biển số</dt><dd><span class="plate-tag plate-lg">{{ violation.license_plate }}</span></dd></div>
+          <div class="info-row"><dt>Loại xe</dt><dd>{{ violation.vehicle_type || '—' }}</dd></div>
+          <div class="info-row"><dt>Màu xe</dt><dd>{{ violation.vehicle_color || 'Chưa xác định' }}</dd></div>
+          <div class="info-row"><dt>Hành vi</dt><dd>{{ violation.violation_type }}</dd></div>
+          <div class="info-row"><dt>Thời điểm</dt><dd class="mono-text">{{ violation.time_str }} · {{ violation.date_str }}</dd></div>
+          <div class="info-row"><dt>Mốc video</dt><dd class="mono-text">{{ violation.video_time }}</dd></div>
+          <div class="info-row"><dt>Nguồn video</dt><dd>{{ violation.video_source || '—' }}</dd></div>
+          <div class="info-row"><dt>Địa điểm</dt><dd>{{ violation.location || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <!-- Độ tin cậy -->
+      <section class="panel">
+        <div class="panel-header">
           <div>
-            <strong style="color: #fff; font-size: 16px; letter-spacing: 1px;">{{ violation.license_plate }}</strong>
-            <div style="font-size: 12px; color: #8a8898;">Độ tin cậy OCR: {{ violation.confidence_plate | pct }}</div>
+            <h3>Độ tin cậy</h3>
+            <p>Tổng hợp <span class="mono-text">{{ violation.confidence_overall | pct }}</span></p>
           </div>
         </div>
-      }
-
-      <div class="evidence-actions" style="margin-top: 14px;">
-        @if (violation.evidence_image) {
-          <a [href]="staticUrl + violation.evidence_image" target="_blank" class="btn btn-secondary action-btn">
-            <i class="bi bi-zoom-in"></i> Xem Ảnh Toàn Màn Hình
-          </a>
-          <a [href]="staticUrl + violation.evidence_image" download class="btn btn-cyan action-btn">
-            <i class="bi bi-download"></i> Tải Ảnh Bằng Chứng
-          </a>
-        }
-      </div>
-    </div>
-
-
-    <!-- VEHICLE INFO CARD -->
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <h3><i class="bi bi-car-front-fill text-cyan"></i> Thông Tin Phương Tiện</h3>
-          <p>Dữ liệu biển số & loại xe do AI nhận diện từ camera</p>
-        </div>
-      </div>
-
-      <div class="info-list">
-        <div class="info-row">
-          <span class="info-label">Biển số nhận diện</span>
-          <strong class="license-plate-large">{{ violation.license_plate }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span class="info-label">Loại phương tiện</span>
-          <strong>{{ violation.vehicle_type || '—' }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span class="info-label">Màu sắc phương tiện</span>
-          <strong>{{ violation.vehicle_color || 'Chưa xác định' }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span class="info-label">Độ tin cậy nhận diện</span>
-          <strong class="green-text">{{ violation.confidence_overall | pct }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span class="info-label">Hành vi vi phạm</span>
-          <span class="violation-badge">{{ violation.violation_type }}</span>
-        </div>
-
-        <div class="info-row">
-          <span class="info-label">Thời điểm xảy ra</span>
-          <span><strong>{{ violation.time_str }}</strong> ngày {{ violation.date_str }}</span>
-        </div>
-
-        <div class="info-row">
-          <span class="info-label">Mốc video vi phạm</span>
-          <span style="color: #00d7ff; font-weight: bold;">{{ violation.video_time }}</span>
-        </div>
-
-        <div class="info-row">
-          <span class="info-label">Nguồn video ghi nhận</span>
-          <span><strong>{{ violation.video_source || '—' }}</strong></span>
-        </div>
-
-        <div class="info-row">
-          <span class="info-label">Địa điểm vi phạm</span>
-          <span>{{ violation.location }}</span>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- AI CONFIDENCE CARD -->
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <h3><i class="bi bi-cpu-fill text-purple"></i> Điểm Số Tin Cậy AI (Confidence)</h3>
-          <p>Chỉ số đánh giá độ chính xác của từng mô hình Deep Learning</p>
-        </div>
-      </div>
-
-      <div class="ai-list">
-        <div class="ai-item">
-          <div class="ai-item-left">
-            <span class="ai-icon"><i class="bi bi-car-front-fill text-cyan"></i></span>
-            <div>
-              <strong>Vehicle Detector (YOLO)</strong>
-              <small>Nhận diện phương tiện</small>
-            </div>
-          </div>
-          <strong class="ai-score green-text">{{ violation.confidence_vehicle | pct }}</strong>
-        </div>
-
-        <div class="ai-item">
-          <div class="ai-item-left">
-            <span class="ai-icon"><i class="bi bi-stoplights-fill text-rose"></i></span>
-            <div>
-              <strong>Traffic Light Classifier</strong>
-              <small>Xác định trạng thái đèn đỏ</small>
-            </div>
-          </div>
-          <strong class="ai-score green-text">{{ violation.confidence_light | pct }}</strong>
-        </div>
-
-        <div class="ai-item">
-          <div class="ai-item-left">
-            <span class="ai-icon"><i class="bi bi-card-text text-amber"></i></span>
-            <div>
-              <strong>License Plate OCR</strong>
-              <small>Đọc ký tự biển số</small>
-            </div>
-          </div>
-          <strong class="ai-score green-text">{{ violation.confidence_plate | pct }}</strong>
-        </div>
-
-        <div class="ai-item">
-          <div class="ai-item-left">
-            <span class="ai-icon"><i class="bi bi-shield-x text-rose"></i></span>
-            <div>
-              <strong>Violation Trajectory Logic</strong>
-              <small>Xác nhận vượt vạch dừng stopline</small>
-            </div>
-          </div>
-          <strong class="ai-score green-text">{{ violation.confidence_violation | pct }}</strong>
-        </div>
-      </div>
+        <dl class="info-list">
+          <div class="info-row"><dt>Nhận diện phương tiện</dt><dd class="mono-text">{{ violation.confidence_vehicle | pct }}</dd></div>
+          <div class="info-row"><dt>Trạng thái đèn tín hiệu</dt><dd class="mono-text">{{ violation.confidence_light | pct }}</dd></div>
+          <div class="info-row"><dt>Đọc biển số</dt><dd class="mono-text">{{ violation.confidence_plate | pct }}</dd></div>
+          <div class="info-row"><dt>Kết luận vi phạm</dt><dd class="mono-text">{{ violation.confidence_violation | pct }}</dd></div>
+        </dl>
+      </section>
     </div>
 
   </div>
 
-
-  <!-- BOTTOM ACTIONS -->
-  <!-- REVIEW HISTORY (bảng violation_reviews) -->
-  <div class="card" style="margin-top: 20px;">
-    <div class="card-header">
+  <!-- Lịch sử duyệt -->
+  <section class="panel history-panel">
+    <div class="panel-header">
       <div>
-        <h3><i class="bi bi-clock-history text-cyan"></i> Lịch Sử Duyệt Hồ Sơ</h3>
-        <p>Mỗi lần thay đổi trạng thái đều được ghi lại</p>
+        <h3>Lịch sử duyệt</h3>
+        <p>Mỗi lần đổi trạng thái đều được ghi lại</p>
       </div>
     </div>
     @if (reviews.length) {
-      <div class="info-list">
+      <ol class="review-list">
         @for (r of reviews; track r.id) {
-          <div class="info-row">
-            <span class="info-label">{{ r.reviewed_at | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+          <li>
+            <span class="review-time mono-text">{{ r.reviewed_at | date: 'dd/MM/yyyy HH:mm' }}</span>
             <span>
-              {{ r.old_status }} <i class="bi bi-arrow-right"></i> <strong>{{ r.new_status }}</strong>
-              @if (r.note) { <span style="color: #8a8898;"> · {{ r.note }}</span> }
-              <span style="color: #8a8898;"> · {{ r.reviewer_name || 'Chưa đăng nhập' }}</span>
+              {{ r.old_status }} <i class="bi bi-arrow-right muted"></i> <strong>{{ r.new_status }}</strong>
+              @if (r.note) { <span class="muted"> · {{ r.note }}</span> }
+              <span class="muted"> · {{ r.reviewer_name || 'Không rõ người duyệt' }}</span>
             </span>
-          </div>
+          </li>
         }
-      </div>
+      </ol>
     } @else {
-      <p style="color: #8a8898; margin: 0;">Hồ sơ chưa được duyệt lần nào.</p>
+      <div class="empty-state">Hồ sơ chưa được duyệt lần nào</div>
     }
     @if (violation.ai_reason) {
-      <p style="color: #8a8898; margin: 12px 0 0; font-size: 12px;">
-        Mô tả gốc từ thuật toán: <code>{{ violation.ai_reason }}</code>
-        @if (violation.track_id !== null) { · Track ID #{{ violation.track_id }} }
-        · Tác vụ <code>{{ violation.task_id }}</code>
+      <p class="ai-reason">
+        Mô tả từ thuật toán <code>{{ violation.ai_reason }}</code>
+        @if (violation.track_id !== null) { · mã theo dõi <span class="mono-text">{{ violation.track_id }}</span> }
+        · tác vụ <code>{{ violation.task_id }}</code>
       </p>
     }
-  </div>
+  </section>
 
-  <div class="bottom-actions-bar">
-    <input
-      type="text"
-      [(ngModel)]="reviewNote"
-      maxlength="500"
-      placeholder="Ghi chú khi duyệt (không bắt buộc)"
-      style="flex: 1; min-width: 200px; padding: 10px 12px; border-radius: 8px; border: 1px solid #2a2538; background: #14111c; color: #fff;"
-    />
+  <!-- Thanh duyệt -->
+  <div class="review-bar">
+    <input type="text" [(ngModel)]="reviewNote" maxlength="500" placeholder="Ghi chú khi duyệt (không bắt buộc)" aria-label="Ghi chú khi duyệt" />
     @if (isHelmetViolation) {
-      <button class="btn btn-warning reject-btn helmet-wrong-btn" (click)="updateStatus('Từ chối', rejectHasHelmet)"
-        title="Người lái thực ra CÓ đội mũ (VD: mũ màu đen) — từ chối và lưu làm dữ liệu dạy lại AI">
-        <i class="bi bi-shield-check"></i> Có Đội Mũ (AI Nhầm)
+      <button class="btn btn-secondary" (click)="updateStatus('Từ chối', rejectHasHelmet)"
+              title="Người lái thực ra có đội mũ, ví dụ mũ màu đen">
+        Có đội mũ (AI nhầm)
       </button>
     }
-    <button class="btn btn-danger reject-btn" (click)="updateStatus('Từ chối')">
-      <i class="bi bi-x-lg"></i> Từ Chối Vi Phạm (Hủy Bỏ)
-    </button>
-    <button class="btn btn-success confirm-btn" (click)="updateStatus('Đã xác nhận')">
-      <i class="bi bi-check-lg"></i> Xác Nhận Vi Phạm & Gửi Xử Lý
-    </button>
+    <button class="btn btn-secondary reject-action" (click)="updateStatus('Từ chối')">Từ chối</button>
+    <button class="btn btn-primary" (click)="updateStatus('Đã xác nhận')">Xác nhận vi phạm</button>
   </div>
 
 </div>

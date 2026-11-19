@@ -1,209 +1,164 @@
 <div class="violations-page">
 
-  <!-- =========================
-       PAGE HEADER
-  ========================== -->
   <div class="page-header">
     <div>
-      <h1 class="page-title"><i class="bi bi-shield-exclamation text-rose"></i> Danh Sách Vi Phạm Giao Thông</h1>
-      <p class="page-subtitle">Quản lý các trường hợp phương tiện vi phạm vượt đèn đỏ & đè vạch do AI phát hiện từ video</p>
+      <h1 class="page-title">Vi phạm</h1>
+      <p class="page-subtitle">Hồ sơ vượt đèn đỏ và không đội mũ bảo hiểm do hệ thống phát hiện từ video</p>
     </div>
-
-    <div class="header-tools">
+    <div class="page-actions">
       <button class="btn btn-secondary" (click)="loadCounts(); loadViolations()">
         <i class="bi bi-arrow-clockwise"></i> Làm mới
       </button>
-      <button class="btn btn-secondary export-btn" (click)="exportReport('xlsx')" [disabled]="!!exporting" title="Xuất báo cáo Excel theo bộ lọc đang chọn">
-        <i class="bi bi-file-earmark-excel-fill text-emerald"></i> {{ exporting === 'xlsx' ? 'Đang xuất...' : 'Xuất Excel' }}
+      <button class="btn btn-secondary" (click)="exportReport('xlsx')" [disabled]="!!exporting" title="Xuất báo cáo Excel theo bộ lọc đang chọn">
+        <i class="bi bi-file-earmark-spreadsheet"></i> {{ exporting === 'xlsx' ? 'Đang xuất' : 'Xuất Excel' }}
       </button>
-      <button class="btn btn-secondary export-btn" (click)="exportReport('pdf')" [disabled]="!!exporting" title="Xuất báo cáo PDF theo bộ lọc đang chọn">
-        <i class="bi bi-file-earmark-pdf-fill text-rose"></i> {{ exporting === 'pdf' ? 'Đang xuất...' : 'Xuất PDF' }}
+      <button class="btn btn-secondary" (click)="exportReport('pdf')" [disabled]="!!exporting" title="Xuất báo cáo PDF theo bộ lọc đang chọn">
+        <i class="bi bi-file-earmark-pdf"></i> {{ exporting === 'pdf' ? 'Đang xuất' : 'Xuất PDF' }}
       </button>
     </div>
   </div>
 
-
-  <!-- =========================
-       SUMMARY CARDS
-  ========================== -->
-  <div class="summary-grid">
-
-    <div class="summary-card">
-      <div class="summary-icon total-icon"><i class="bi bi-shield-slash-fill"></i></div>
-      <div class="summary-content">
-        <span>TỔNG SỐ VI PHẠM</span>
-        <strong>{{ summary.totalViolations }}</strong>
-        <small class="muted-text">Từ video AI</small>
-      </div>
+  <!-- Số liệu -->
+  <div class="stat-row">
+    <div class="stat">
+      <span class="stat-label">Tổng vi phạm</span>
+      <span class="stat-value">{{ summary.totalViolations | number }}</span>
+      <span class="stat-sub">Toàn bộ hồ sơ</span>
     </div>
-
-    <div class="summary-card">
-      <div class="summary-icon today-icon"><i class="bi bi-calendar-event-fill"></i></div>
-      <div class="summary-content">
-        <span>VI PHẠM HÔM NAY</span>
-        <strong class="rose-text">{{ summary.todayViolations }}</strong>
-        <small class="rose-sub">AI phát hiện</small>
-      </div>
+    <div class="stat">
+      <span class="stat-label">Hôm nay</span>
+      <span class="stat-value">{{ summary.todayViolations | number }}</span>
+      <span class="stat-sub">Ghi nhận trong ngày</span>
     </div>
-
-    <div class="summary-card">
-      <div class="summary-icon pending-icon"><i class="bi bi-hourglass-split"></i></div>
-      <div class="summary-content">
-        <span>CẦN PHÊ DUYỆT (CHƯA XỬ LÝ)</span>
-        <strong class="amber-text">{{ summary.pendingApproval }}</strong>
-        <small class="amber-sub">Chờ CSGT xác nhận</small>
-      </div>
+    <div class="stat">
+      <span class="stat-label">Chờ duyệt</span>
+      <span class="stat-value stat-pending">{{ summary.pendingApproval | number }}</span>
+      <span class="stat-sub">Chưa xử lý</span>
     </div>
-
-    <div class="summary-card">
-      <div class="summary-icon confirmed-icon"><i class="bi bi-check-all"></i></div>
-      <div class="summary-content">
-        <span>ĐÃ XÁC NHẬN</span>
-        <strong class="green-text">{{ summary.confirmedViolations }}</strong>
-        <small class="green-sub">Đã phê duyệt xử phạt</small>
-      </div>
+    <div class="stat">
+      <span class="stat-label">Đã xác nhận</span>
+      <span class="stat-value">{{ summary.confirmedViolations | number }}</span>
+      <span class="stat-sub">Đã duyệt xử phạt</span>
     </div>
-
   </div>
 
-
-  <!-- =========================
-       FILTER BAR
-  ========================== -->
   @if (exportError) {
-    <div class="export-error"><i class="bi bi-exclamation-triangle-fill"></i> {{ exportError }}</div>
+    <div class="inline-alert" role="alert"><i class="bi bi-exclamation-circle"></i> {{ exportError }}</div>
   }
 
-  <div class="filter-card">
-    <div class="search-box">
-      <span class="search-icon"><i class="bi bi-search"></i></span>
-      <input 
-        type="text" 
-        [(ngModel)]="searchQuery" 
-        (keyup.enter)="onSearch()" 
-        placeholder="Tìm kiếm theo biển số xe hoặc loại xe..."
-      />
+  <section class="panel">
+    <!-- Bộ lọc -->
+    <div class="filter-bar">
+      <label class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Biển số hoặc loại xe" aria-label="Tìm kiếm" />
+      </label>
+
+      <select [(ngModel)]="selectedViolationType" (change)="onSearch()" aria-label="Loại vi phạm">
+        <option>Tất cả loại vi phạm</option>
+        @for (t of violationTypeOptions; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+
+      <select [(ngModel)]="selectedLocation" (change)="onSearch()" aria-label="Vị trí">
+        <option>Tất cả vị trí</option>
+        @if (locationOptions.length) {
+          <optgroup label="Địa điểm">
+            @for (l of locationOptions; track l) {
+              <option [value]="l">{{ l }}</option>
+            }
+          </optgroup>
+        }
+        @if (videoSourceOptions.length) {
+          <optgroup label="Video nguồn">
+            @for (s of videoSourceOptions; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </optgroup>
+        }
+      </select>
+
+      <select [(ngModel)]="selectedStatus" (change)="onSearch()" aria-label="Trạng thái">
+        <option>Tất cả trạng thái</option>
+        <option>Chưa xử lý</option>
+        <option>Đã xác nhận</option>
+        <option>Từ chối</option>
+      </select>
+
+      <div class="date-range">
+        <input type="date" [(ngModel)]="dateFrom" (change)="onSearch()" [max]="dateTo || null" aria-label="Từ ngày" />
+        <span class="muted">–</span>
+        <input type="date" [(ngModel)]="dateTo" (change)="onSearch()" [min]="dateFrom || null" aria-label="Đến ngày" />
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="resetFilters()">Đặt lại</button>
+        <button class="btn btn-primary" (click)="onSearch()">Lọc</button>
+      </div>
     </div>
 
-    <select class="filter-select" [(ngModel)]="selectedViolationType" (change)="onSearch()">
-      <option>Tất cả loại vi phạm</option>
-      @for (t of violationTypeOptions; track t) {
-        <option [value]="t">{{ t }}</option>
-      }
-    </select>
-
-    <select class="filter-select" [(ngModel)]="selectedLocation" (change)="onSearch()">
-      <option>Tất cả vị trí</option>
-      @if (locationOptions.length) {
-        <optgroup label="Địa điểm">
-          @for (l of locationOptions; track l) {
-            <option [value]="l">{{ l }}</option>
-          }
-        </optgroup>
-      }
-      @if (videoSourceOptions.length) {
-        <optgroup label="Video nguồn">
-          @for (s of videoSourceOptions; track s) {
-            <option [value]="s">{{ s }}</option>
-          }
-        </optgroup>
-      }
-    </select>
-
-    <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onSearch()">
-      <option>Tất cả trạng thái</option>
-      <option>Chưa xử lý</option>
-      <option>Đã xác nhận</option>
-      <option>Từ chối</option>
-    </select>
-
-    <label class="date-field" title="Từ ngày">
-      <i class="bi bi-calendar3"></i>
-      <input type="date" class="filter-select" [(ngModel)]="dateFrom" (change)="onSearch()" [max]="dateTo || null" aria-label="Từ ngày" />
-    </label>
-    <label class="date-field" title="Đến ngày">
-      <span>→</span>
-      <input type="date" class="filter-select" [(ngModel)]="dateTo" (change)="onSearch()" [min]="dateFrom || null" aria-label="Đến ngày" />
-    </label>
-
-    <button class="btn btn-primary filter-btn" (click)="onSearch()"><i class="bi bi-funnel-fill"></i> Lọc</button>
-    <button class="btn btn-secondary" (click)="resetFilters()"><i class="bi bi-arrow-counterclockwise"></i> Đặt lại</button>
-  </div>
-
-
-  <!-- =========================
-       VIOLATIONS DATA TABLE
-  ========================== -->
-  <div class="table-card">
+    <!-- Bảng -->
     <div class="table-container">
       <table class="data-table">
         <thead>
           <tr>
-            <th>BẰNG CHỨNG</th>
-            <th>BIỂN SỐ AI</th>
-            <th>NGUỒN & VỊ TRÍ</th>
-            <th>THỜI GIAN</th>
-            <th>LOẠI VI PHẠM</th>
-            <th>ĐỘ TIN CẬY AI</th>
-            <th>TRẠNG THÁI</th>
-            <th>THAO TÁC</th>
+            <th>Bằng chứng</th>
+            <th>Biển số</th>
+            <th>Nguồn và vị trí</th>
+            <th>Thời gian</th>
+            <th>Loại vi phạm</th>
+            <th class="num">Độ tin cậy</th>
+            <th>Trạng thái</th>
+            <th></th>
           </tr>
         </thead>
-
         <tbody>
           @for (item of violations; track item.id) {
             <tr>
               <td>
-                @if (item.subject_crop_image) {
-                  <img [src]="staticUrl + item.subject_crop_image" class="evidence-thumb-img" alt="Người vi phạm" title="Ảnh cận cảnh người vi phạm"
-                       style="height: 46px; width: auto; border-radius: 4px; border: 1px solid #ff3366; margin-right: 6px; vertical-align: middle;" />
-                }
-                @if (item.plate_crop_image) {
-                  <img [src]="staticUrl + item.plate_crop_image" class="evidence-thumb-img" alt="Biển số" style="max-height: 38px; border-radius: 4px; border: 1px solid #00d7ff; vertical-align: middle;" />
-                } @else if (!item.subject_crop_image) {
-                  <div class="evidence-thumb car"><i class="bi bi-camera-fill"></i> ANPR</div>
-                }
-              </td>
-              <td>
-                <strong class="license-plate-badge">{{ item.license_plate }}</strong>
-                <div style="font-size: 11px; color: #8a8898; margin-top: 2px;">{{ item.vehicle_type }}</div>
-              </td>
-              <td>
-                <div class="camera-cell">
-                  <strong>{{ item.video_source || '—' }}</strong>
-                  <span>{{ item.location || '' }}</span>
+                <div class="thumbs">
+                  @if (item.subject_crop_image) {
+                    <img [src]="staticUrl + item.subject_crop_image" class="thumb-subject" alt="Người vi phạm" title="Ảnh cận cảnh người vi phạm" />
+                  }
+                  @if (item.plate_crop_image) {
+                    <img [src]="staticUrl + item.plate_crop_image" class="thumb-plate" alt="Ảnh biển số" />
+                  } @else if (!item.subject_crop_image) {
+                    <span class="thumb-empty"><i class="bi bi-image"></i></span>
+                  }
                 </div>
               </td>
               <td>
-                <div class="time-cell">
-                  <strong>{{ item.time_str }}</strong>
-                  <small>{{ item.video_time }} ({{ item.date_str }})</small>
-                </div>
+                <span class="plate-tag">{{ item.license_plate }}</span>
+                <div class="cell-sub">{{ item.vehicle_type }}</div>
               </td>
               <td>
-                <span class="violation-badge">{{ item.violation_type }}</span>
+                <div>{{ item.video_source || '—' }}</div>
+                <div class="cell-sub">{{ item.location || '' }}</div>
               </td>
               <td>
-                <span class="confidence-pill" [class]="getConfidencePillClass(item.confidence_overall)">
-                  {{ item.confidence_overall | pct }}
-                </span>
+                <div class="mono-text">{{ item.time_str }}</div>
+                <div class="cell-sub mono-text">{{ item.video_time }} · {{ item.date_str }}</div>
+              </td>
+              <td>{{ item.violation_type }}</td>
+              <td class="num">
+                <span class="confidence-pill" [class]="getConfidencePillClass(item.confidence_overall)">{{ item.confidence_overall | pct }}</span>
               </td>
               <td>
-                <span class="status-badge" [class.online]="item.status === 'Đã xác nhận'" [class.offline]="item.status === 'Chưa xử lý'">
-                  {{ item.status }}
-                </span>
+                <span class="dot-status"
+                      [class.is-confirmed]="item.status === 'Đã xác nhận'"
+                      [class.is-pending]="item.status === 'Chưa xử lý'"
+                      [class.is-rejected]="item.status === 'Từ chối'">{{ item.status }}</span>
               </td>
-              <td>
-                <a class="action-btn" [routerLink]="['/admin/violations', item.id]">
-                  Xem Hồ Sơ <i class="bi bi-chevron-right"></i>
-                </a>
+              <td class="row-action">
+                <a class="action-btn" [routerLink]="['/admin/violations', item.id]">Xem hồ sơ</a>
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="8" style="text-align: center; padding: 40px; color: #8a8898;">
-                <i class="bi bi-inbox" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
-                Không tìm thấy hồ sơ vi phạm nào phù hợp với bộ lọc
+              <td colspan="8" class="empty-state">
+                <i class="bi bi-inbox"></i>
+                Không có hồ sơ nào phù hợp với bộ lọc
               </td>
             </tr>
           }
@@ -211,19 +166,18 @@
       </table>
     </div>
 
-    <!-- Pagination -->
     <div class="pagination-bar">
-      <span>Hiển thị {{ violations.length }} trong {{ totalItems }} vi phạm</span>
+      <span class="mono-text">{{ violations.length }} / {{ totalItems }} vi phạm</span>
       <div class="pagination-btns">
-        <button class="pg-btn" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1; loadViolations()">
-          <i class="bi bi-chevron-left"></i> Trang trước
+        <button class="pg-btn" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1; loadViolations()" aria-label="Trang trước">
+          <i class="bi bi-chevron-left"></i>
         </button>
-        <button class="pg-btn active">{{ currentPage }}</button>
-        <button class="pg-btn" [disabled]="violations.length < pageSize" (click)="currentPage = currentPage + 1; loadViolations()">
-          Trang sau <i class="bi bi-chevron-right"></i>
+        <span class="pg-current mono-text">Trang {{ currentPage }}</span>
+        <button class="pg-btn" [disabled]="violations.length < pageSize" (click)="currentPage = currentPage + 1; loadViolations()" aria-label="Trang sau">
+          <i class="bi bi-chevron-right"></i>
         </button>
       </div>
     </div>
-  </div>
+  </section>
 
 </div>

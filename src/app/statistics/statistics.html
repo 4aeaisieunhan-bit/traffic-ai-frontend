@@ -1,192 +1,144 @@
 <div class="statistics-page">
 
-  <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <h1 class="page-title"><i class="bi bi-graph-up-arrow text-cyan"></i> Thống Kê & Phân Tích Dữ Liệu AI</h1>
-      <p class="page-subtitle">Báo cáo tổng hợp số liệu vi phạm giao thông và độ tin cậy mô hình AI từ hệ thống</p>
+      <h1 class="page-title">Thống kê</h1>
+      <p class="page-subtitle">Số liệu vi phạm và độ tin cậy của các mô hình trên toàn bộ dữ liệu</p>
     </div>
-
-    <button class="btn btn-secondary" (click)="loadStatistics()">
-      <i class="bi bi-arrow-clockwise"></i> Cập nhật số liệu
-    </button>
+    <div class="page-actions">
+      <button class="btn btn-secondary" (click)="loadStatistics()">
+        <i class="bi bi-arrow-clockwise"></i> Cập nhật
+      </button>
+    </div>
   </div>
 
-
-  <!-- SUMMARY CARDS (THỰC TẾ TỪ BACKEND) -->
-  <div class="summary-grid">
-
-    <div class="summary-card">
-      <div class="summary-icon total-icon"><i class="bi bi-shield-slash-fill"></i></div>
-      <div class="summary-content">
-        <span>TỔNG VI PHẠM</span>
-        <strong>{{ summary?.totalViolations || 0 }}</strong>
-        <small class="muted-text">Từ video đã phân tích</small>
-      </div>
+  <div class="stat-row">
+    <div class="stat">
+      <span class="stat-label">Tổng vi phạm</span>
+      <span class="stat-value">{{ (summary?.totalViolations || 0) | number }}</span>
+      <span class="stat-sub">Từ các video đã phân tích</span>
     </div>
-
-    <div class="summary-card">
-      <div class="summary-icon today-icon"><i class="bi bi-calendar-check-fill"></i></div>
-      <div class="summary-content">
-        <span>CẦN XỬ LÝ (CHỜ DUYỆT)</span>
-        <strong class="rose-text">{{ summary?.pendingApproval || 0 }}</strong>
-        <small class="rose-sub">Hồ sơ chờ CSGT duyệt</small>
-      </div>
+    <div class="stat">
+      <span class="stat-label">Chờ duyệt</span>
+      <span class="stat-value stat-pending">{{ (summary?.pendingApproval || 0) | number }}</span>
+      <span class="stat-sub">Chưa xử lý</span>
     </div>
-
-    <div class="summary-card">
-      <div class="summary-icon confirmed-icon"><i class="bi bi-check-circle-fill"></i></div>
-      <div class="summary-content">
-        <span>ĐÃ XÁC NHẬN</span>
-        <strong class="green-text">{{ summary?.confirmedViolations || 0 }}</strong>
-        <small class="green-sub">Đã phê duyệt xử phạt</small>
-      </div>
+    <div class="stat">
+      <span class="stat-label">Đã xác nhận</span>
+      <span class="stat-value">{{ (summary?.confirmedViolations || 0) | number }}</span>
+      <span class="stat-sub">Đã duyệt xử phạt</span>
     </div>
-
-    <div class="summary-card">
-      <div class="summary-icon confidence-icon"><i class="bi bi-bullseye"></i></div>
-      <div class="summary-content">
-        <span>ĐỘ TIN CẬY AI (ANPR)</span>
-        <strong class="cyan-text">{{ summary?.avgConfidence | pct }}</strong>
-        <small class="cyan-sub">Trung bình toàn bộ phát hiện</small>
-      </div>
+    <div class="stat">
+      <span class="stat-label">Độ tin cậy trung bình</span>
+      <span class="stat-value">{{ summary?.avgConfidence | pct }}</span>
+      <span class="stat-sub">Trên toàn bộ hồ sơ</span>
     </div>
-
   </div>
 
-
-  <!-- VIOLATIONS BY DAY CHART -->
-  <div class="chart-card">
-    <div class="card-header">
+  <!-- Biểu đồ chính: vi phạm theo ngày -->
+  <section class="panel section">
+    <div class="panel-header">
       <div>
-        <h3><i class="bi bi-bar-chart-fill text-blue"></i> Phân Bố Vi Phạm Theo Ngày</h3>
-        <p>Số lượng trường hợp phương tiện vi phạm được ghi nhận trong cơ sở dữ liệu</p>
+        <h3>Vi phạm theo ngày</h3>
+        <p>Số hồ sơ ghi nhận mỗi ngày, ngày gần nhất được tô màu</p>
       </div>
     </div>
-
-    <div class="bar-chart" style="display: flex; gap: 24px; align-items: flex-end; min-height: 160px; padding: 20px 10px;">
-      @for (d of summary?.byDate; track d.date) {
-        <div class="bar-column active-today" style="flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-          <span class="bar-value" style="font-weight: bold; color: #00d7ff;">{{ d.count }}</span>
-          <div class="bar-track" style="width: 32px; height: 120px; background: #231f2d; border-radius: 4px; display: flex; align-items: flex-end; overflow: hidden;">
-            <div class="bar-fill" [style.height.%]="90" style="width: 100%; background: linear-gradient(180deg, #00d7ff, #0055ff); border-radius: 4px;"></div>
-          </div>
-          <span class="bar-label" style="font-size: 12px; color: #8a8898;">{{ d.date }}</span>
+    <div class="panel-body">
+      @if (!summary?.byDate?.length) {
+        <div class="empty-state">{{ loading ? 'Đang tải' : 'Chưa có dữ liệu' }}</div>
+      } @else {
+        <div class="day-chart" role="img" aria-label="Biểu đồ số vi phạm theo ngày">
+          @for (d of summary?.byDate; track d.date; let last = $last) {
+            <div class="day-col">
+              <span class="day-value mono-text">{{ d.count }}</span>
+              <div class="day-track">
+                <div class="day-fill" [class.latest]="last" [style.height.%]="barHeight(d.count)"></div>
+              </div>
+              <span class="day-label mono-text">{{ d.date }}</span>
+            </div>
+          }
         </div>
       }
     </div>
-  </div>
+  </section>
 
-
-  <!-- SECOND ROW GRID -->
   <div class="statistics-grid">
 
-    <!-- VIOLATION BY TYPE (DỮ LIỆU THẬT) -->
-    <div class="chart-card">
-      <div class="card-header">
+    <section class="panel">
+      <div class="panel-header">
         <div>
-          <h3><i class="bi bi-pie-chart-fill text-amber"></i> Phân Loại Hành Vi Vi Phạm</h3>
-          <p>Phân bố các trường hợp vi phạm theo tính chất</p>
+          <h3>Theo hành vi</h3>
+          <p>Tỉ lệ từng loại vi phạm</p>
         </div>
       </div>
-
-      <div class="violation-list">
-        @for (item of summary?.byType; track item.name) {
-          <div class="violation-item" style="margin-bottom: 16px;">
-            <div class="item-header" style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-              <span>{{ item.name }}</span>
-              <strong>{{ item.count }} ({{ item.percentage }}%)</strong>
-            </div>
-            <div class="progress-track" style="background: #231f2d; height: 10px; border-radius: 5px; overflow: hidden;">
-              <div 
-                class="progress-bar" 
-                [style.width.%]="item.percentage" 
-                style="height: 100%; background: linear-gradient(90deg, #ff3366, #ff7b00); border-radius: 5px;"
-              ></div>
-            </div>
-          </div>
-        }
+      <div class="panel-body">
+        <ol class="rank-list">
+          @for (item of summary?.byType; track item.name; let first = $first) {
+            <li>
+              <div class="rank-row">
+                <span>{{ item.name }}</span>
+                <span class="mono-text muted">{{ item.count | number }} · {{ item.percentage }}%</span>
+              </div>
+              <span class="rank-track"><span class="rank-fill" [class.lead]="first" [style.width.%]="item.percentage"></span></span>
+            </li>
+          } @empty {
+            <li class="empty-state">Chưa có dữ liệu</li>
+          }
+        </ol>
       </div>
-    </div>
+    </section>
 
-
-    <!-- AI MODEL ACCURACY METRICS (THAY THẾ CAMERA RANKING) -->
-    <div class="chart-card">
-      <div class="card-header">
+    <section class="panel">
+      <div class="panel-header">
         <div>
-          <h3><i class="bi bi-cpu-fill text-cyan"></i> Độ Chính Xác Từng Mô Hình AI</h3>
-          <p>Hiệu năng phát hiện của các mạng Neural trong Pipeline</p>
+          <h3>Theo loại phương tiện</h3>
+          <p>Phương tiện trong các hồ sơ vi phạm</p>
         </div>
       </div>
+      <div class="panel-body">
+        <ol class="rank-list">
+          @for (v of summary?.byVehicle; track v.name; let first = $first) {
+            <li>
+              <div class="rank-row">
+                <span>{{ v.name }}</span>
+                <span class="mono-text muted">{{ v.count | number }} · {{ v.percentage }}%</span>
+              </div>
+              <span class="rank-track"><span class="rank-fill" [class.lead]="first" [style.width.%]="v.percentage"></span></span>
+            </li>
+          } @empty {
+            <li class="empty-state">Chưa có dữ liệu</li>
+          }
+        </ol>
+      </div>
+    </section>
 
-      <div class="camera-ranking-list">
-        <div class="camera-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #181520; border-radius: 8px; margin-bottom: 10px;">
-          <div>
-            <strong>Mô hình Phương Tiện (Vehicle)</strong>
-            <span style="display: block; font-size: 11px; color: #8a8898;">vehicle-26s-best.pt (Tracking ByteTrack)</span>
-          </div>
-          <span class="camera-count-badge" style="background: rgba(0, 230, 80, 0.15); color: #00e650; font-weight: bold; padding: 4px 10px; border-radius: 6px;">
-            {{ summary?.modelAccuracy?.vehicle | pct }}
-          </span>
-        </div>
-
-        <div class="camera-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #181520; border-radius: 8px; margin-bottom: 10px;">
-          <div>
-            <strong>Mô hình Đèn Tín Hiệu (Traffic Light)</strong>
-            <span style="display: block; font-size: 11px; color: #8a8898;">light_traffic-26m-best.pt</span>
-          </div>
-          <span class="camera-count-badge" style="background: rgba(0, 215, 255, 0.15); color: #00d7ff; font-weight: bold; padding: 4px 10px; border-radius: 6px;">
-            {{ summary?.modelAccuracy?.trafficLight | pct }}
-          </span>
-        </div>
-
-        <div class="camera-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #181520; border-radius: 8px; margin-bottom: 10px;">
-          <div>
-            <strong>Mô hình Mũ Bảo Hiểm (Helmet)</strong>
-            <span style="display: block; font-size: 11px; color: #8a8898;">helmet_26s.pt</span>
-          </div>
-          <span class="camera-count-badge" style="background: rgba(255, 170, 0, 0.15); color: #ffaa00; font-weight: bold; padding: 4px 10px; border-radius: 6px;">
-            {{ summary?.modelAccuracy?.helmet | pct }}
-          </span>
-        </div>
-
-        <div class="camera-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #181520; border-radius: 8px; margin-bottom: 10px;">
-          <div>
-            <strong>Mô hình Nhận Diện Biển Số (OCR 2-Pass)</strong>
-            <span style="display: block; font-size: 11px; color: #8a8898;">LP-26s-best.pt + OCR-26s-best.pt</span>
-          </div>
-          <span class="camera-count-badge" style="background: rgba(0, 230, 80, 0.15); color: #00e650; font-weight: bold; padding: 4px 10px; border-radius: 6px;">
-            {{ summary?.modelAccuracy?.plateOcr | pct }}
-          </span>
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h3>Độ tin cậy theo mô hình</h3>
+          <p>Trung bình qua các lần phân tích</p>
         </div>
       </div>
-    </div>
-
-  </div>
-
-
-  <!-- VEHICLE CLASSIFICATION (DỮ LIỆU THẬT) -->
-  <div class="chart-card">
-    <div class="card-header">
-      <div>
-        <h3><i class="bi bi-truck-front-fill text-blue"></i> Phân Loại Phương Tiện Vi Phạm (Thực Tế)</h3>
-        <p>Thống kê chủng loại phương tiện AI nhận diện được từ video</p>
-      </div>
-    </div>
-
-    <div class="vehicle-grid">
-      @for (v of summary?.byVehicle; track v.name) {
-        <div class="vehicle-card">
-          <div class="vehicle-icon-glow">
-            <i class="bi" [class.bi-bicycle]="v.name.includes('máy')" [class.bi-car-front-fill]="v.name.includes('Ô tô')" [class.bi-truck-flatbed]="v.name.includes('khách') || v.name.includes('tải')"></i>
-          </div>
-          <div class="vehicle-info">
-            <span>{{ v.name }}</span>
-            <strong>{{ v.count }} lượt ({{ v.percentage }}%)</strong>
-          </div>
+      <dl class="model-list">
+        <div class="model-row">
+          <dt>Phương tiện<small>Nhận diện và theo dõi xe</small></dt>
+          <dd class="mono-text">{{ summary?.modelAccuracy?.vehicle | pct }}</dd>
         </div>
-      }
-    </div>
+        <div class="model-row">
+          <dt>Đèn tín hiệu<small>Trạng thái đèn và mũi tên</small></dt>
+          <dd class="mono-text">{{ summary?.modelAccuracy?.trafficLight | pct }}</dd>
+        </div>
+        <div class="model-row">
+          <dt>Mũ bảo hiểm<small>Có mũ và không mũ</small></dt>
+          <dd class="mono-text">{{ summary?.modelAccuracy?.helmet | pct }}</dd>
+        </div>
+        <div class="model-row">
+          <dt>Biển số<small>Phát hiện biển và đọc ký tự</small></dt>
+          <dd class="mono-text">{{ summary?.modelAccuracy?.plateOcr | pct }}</dd>
+        </div>
+      </dl>
+    </section>
+
   </div>
 
 </div>

@@ -2,14 +2,14 @@
 
   <div class="page-header">
     <div>
-      <h1 class="page-title"><i class="bi bi-person-circle text-cyan"></i> Tài Khoản Của Tôi</h1>
+      <h1 class="page-title">Tài khoản của tôi</h1>
       <p class="page-subtitle">Thông tin đăng nhập và đổi mật khẩu</p>
     </div>
   </div>
 
   <!-- THÔNG TIN -->
-  <div class="panel">
-    <h3><i class="bi bi-person-vcard"></i> Thông tin tài khoản</h3>
+  <div class="panel form-panel">
+    <h3>Thông tin tài khoản</h3>
     @if (user(); as u) {
       <div class="form-grid">
         <div class="field field-wide"><span>Họ và tên</span><strong>{{ u.full_name }}</strong></div>
@@ -21,14 +21,14 @@
   </div>
 
   <!-- ĐỔI MẬT KHẨU -->
-  <form class="panel" (ngSubmit)="changePassword()" novalidate>
-    <h3><i class="bi bi-key-fill text-amber"></i> Đổi mật khẩu</h3>
+  <form class="panel form-panel" (ngSubmit)="changePassword()" novalidate>
+    <h3>Đổi mật khẩu</h3>
 
     @if (errorMessage()) {
-      <div class="alert alert-error" role="alert"><i class="bi bi-x-octagon-fill"></i> {{ errorMessage() }}</div>
+      <div class="alert alert-error" role="alert"><i class="bi bi-exclamation-circle"></i> {{ errorMessage() }}</div>
     }
     @if (successMessage()) {
-      <div class="alert alert-success" role="status"><i class="bi bi-check-circle-fill"></i> {{ successMessage() }}</div>
+      <div class="alert alert-success" role="status"><i class="bi bi-check2"></i> {{ successMessage() }}</div>
     }
 
     <div class="form-grid">
@@ -51,12 +51,12 @@
       </label>
     </div>
 
-    <div class="form-actions" style="justify-content: space-between; align-items: center;">
-      <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-sub);">
+    <div class="form-actions split">
+      <label class="check-label">
         <input type="checkbox" name="showPassword" [(ngModel)]="showPassword" /> Hiện mật khẩu
       </label>
       <button type="submit" class="btn btn-primary" [disabled]="saving()">
-        <i class="bi bi-check-lg"></i> {{ saving() ? 'Đang lưu...' : 'Đổi mật khẩu' }}
+        {{ saving() ? 'Đang lưu' : 'Đổi mật khẩu' }}
       </button>
     </div>
   </form>

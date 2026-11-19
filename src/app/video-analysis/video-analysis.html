@@ -1,166 +1,134 @@
 <div class="analyze-page">
 
-  <!-- =========================
-       PAGE HEADER
-  ========================== -->
   <div class="page-header">
     <div>
-      <h1 class="page-title"><i class="bi bi-cpu-fill text-cyan"></i> Tải Lên & Phân Tích Video AI</h1>
-      <p class="page-subtitle">Nhận diện phương tiện, đọc biển số xe tự động và trích xuất bằng chứng vi phạm từ file video</p>
+      <h1 class="page-title">Phân tích video</h1>
+      <p class="page-subtitle">Phát hiện vượt đèn đỏ, không đội mũ bảo hiểm và đọc biển số từ video camera</p>
     </div>
-
-    <div style="display: flex; gap: 12px;">
+    <div class="page-actions">
       <button class="btn btn-secondary" (click)="loadOutputDetails()">
         <i class="bi bi-arrow-clockwise"></i> Cập nhật kết quả
       </button>
-      <a routerLink="/admin/violations" class="btn btn-secondary back-btn">
-        <i class="bi bi-shield-exclamation text-rose"></i> Danh sách vi phạm
-      </a>
+      <a routerLink="/admin/violations" class="btn btn-secondary">Danh sách vi phạm</a>
     </div>
   </div>
 
 
-  <!-- =========================
-       VIDEO INPUT & UPLOAD SECTION
-  ========================== -->
-  <div class="source-card">
-    <div class="card-title-box">
-      <h3><i class="bi bi-cloud-arrow-up-fill text-cyan"></i> 1. Tải Lên Video Để Kiểm Thử AI</h3>
-      <p>Chọn file video từ máy tính của bạn hoặc sử dụng video mẫu có sẵn trong hệ thống</p>
+  <!-- Chọn nguồn video -->
+  <section class="panel section">
+    <div class="panel-header">
+      <div>
+        <h3>Chọn video</h3>
+        <p>Tải video từ máy tính hoặc dùng video mẫu có sẵn</p>
+      </div>
     </div>
 
-    <div class="source-options">
+    <div class="panel-body">
+      <div class="source-options">
 
-      <!-- Upload local file -->
-      <div class="source-option upload-box" [class.selected]="selectedFile !== null">
-        <div class="source-icon"><i class="bi bi-file-earmark-arrow-up text-cyan"></i></div>
-        <h4>Upload Video Từ Máy Tính</h4>
-        <p>Hỗ trợ định dạng MP4, MOV, AVI, MKV, WEBM dung lượng tới 2GB</p>
+        <div class="source-option" [class.selected]="selectedFile !== null">
+          <i class="bi bi-file-earmark-arrow-up source-icon"></i>
+          <div class="source-text">
+            <h4>Video từ máy tính</h4>
+            <p>MP4, MOV, AVI, MKV, WEBM, tối đa 2 GB</p>
+            @if (selectedFile) {
+              <span class="source-picked"><i class="bi bi-check2"></i> {{ selectedFileName }} · {{ selectedFileSize }}</span>
+            }
+            @if (fileError) {
+              <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ fileError }}</span>
+            }
+          </div>
+          <label class="btn btn-secondary" [class.disabled]="isBusy">
+            {{ selectedFile ? 'Chọn file khác' : 'Chọn file' }}
+            <input type="file" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.m4v" (change)="onFileSelected($event)" [disabled]="isBusy" hidden>
+          </label>
+        </div>
 
-        <label class="btn btn-cyan upload-btn" [class.disabled]="isBusy">
-          <i class="bi bi-folder2-open"></i> {{ selectedFile ? selectedFileName : 'Duyệt File Video' }}
-          <input type="file" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.m4v" (change)="onFileSelected($event)" [disabled]="isBusy" hidden>
-        </label>
-        @if (selectedFile) {
-          <div style="margin-top: 8px; font-size: 12px; color: #00e650;">
-            <i class="bi bi-check2"></i> Đã chọn: {{ selectedFileName }} ({{ selectedFileSize }})
+        <div class="source-option" [class.selected]="selectedFile === null && selectedFileName === '21s_vidnew.mov'">
+          <i class="bi bi-camera-reels source-icon"></i>
+          <div class="source-text">
+            <h4>Video mẫu</h4>
+            <p>Giao lộ Nguyễn Trãi – Khuất Duy Tiến, 4K, 21 giây</p>
+            @if (selectedFile === null && selectedFileName === '21s_vidnew.mov') {
+              <span class="source-picked"><i class="bi bi-check2"></i> Đã chọn video mẫu</span>
+            }
           </div>
-        }
-        @if (fileError) {
-          <div style="margin-top: 8px; font-size: 12px; color: #ff3366;">
-            <i class="bi bi-exclamation-triangle"></i> {{ fileError }}
-          </div>
-        }
+          <button class="btn btn-secondary" [disabled]="isBusy" (click)="selectSampleVideo()">Dùng video mẫu</button>
+        </div>
+
       </div>
 
-      <!-- Default sample video -->
-      <div class="source-option active-box" [class.selected]="selectedFile === null && selectedFileName === '21s_vidnew.mov'">
-        <div class="source-icon"><i class="bi bi-camera-reels-fill text-blue"></i></div>
-        <h4>Sử Dụng Video Mẫu Sẵn Có</h4>
-        <p>Video 4K giao lộ trục đường Nguyễn Trãi - Khuất Duy Tiến (21s_vidnew.mov)</p>
-
-        <button class="btn btn-primary camera-btn" [disabled]="isBusy" (click)="selectSampleVideo()">
-          <i class="bi bi-check-circle"></i> Chọn Video Mẫu
-        </button>
-        @if (selectedFile === null && selectedFileName === '21s_vidnew.mov') {
-          <div style="margin-top: 8px; font-size: 12px; color: #00d7ff;">
-            <i class="bi bi-check2"></i> Đã chọn video mẫu sẵn có
-          </div>
-        }
-      </div>
-
-    </div>
-
-    <!-- Location (bắt buộc cho mọi lần phân tích) -->
-      <div #locationBox class="location-box" [class.attention]="locationAttention"
-           style="margin-top: 20px; padding: 16px; background: #14111c; border: 1px solid #2a2538; border-radius: 8px;"
-           [style.border-color]="needsLocation ? '#ffaa00' : '#2a2538'">
-        <label for="location-select" style="display: block; font-size: 13px; color: #fff; font-weight: 600; margin-bottom: 8px;">
-          <i class="bi bi-geo-alt-fill text-rose"></i> Địa điểm quay video <span style="color: #ff3366;">*</span>
-        </label>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-          <select
-            id="location-select"
-            class="filter-select"
-            [(ngModel)]="selectedLocationId"
-            [disabled]="isBusy"
-            style="flex: 1; min-width: 240px; padding: 10px 12px; border-radius: 8px; background: #181520; color: #fff; border: 1px solid #2a2538;"
-          >
-            <option [ngValue]="null" disabled>-- Chọn địa điểm --</option>
+      <!-- Địa điểm (bắt buộc) -->
+      <div #locationBox class="location-box" [class.attention]="locationAttention" [class.needs]="needsLocation">
+        <label for="location-select" class="field-label">Địa điểm quay video <span class="required">*</span></label>
+        <div class="field-row">
+          <select id="location-select" class="grow" [(ngModel)]="selectedLocationId" [disabled]="isBusy">
+            <option [ngValue]="null" disabled>Chọn địa điểm</option>
             @for (loc of locations; track loc.id) {
               <option [ngValue]="loc.id">{{ loc.name }}{{ loc.address ? ' (' + loc.address + ')' : '' }}</option>
             }
           </select>
           <button type="button" class="btn btn-secondary" [disabled]="isBusy" (click)="showNewLocation = !showNewLocation">
             <i class="bi" [class.bi-plus-lg]="!showNewLocation" [class.bi-x-lg]="showNewLocation"></i>
-            {{ showNewLocation ? 'Đóng' : 'Thêm địa điểm mới' }}
+            {{ showNewLocation ? 'Đóng' : 'Thêm địa điểm' }}
           </button>
         </div>
 
         @if (showNewLocation) {
-          <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-            <input
-              type="text" [(ngModel)]="newLocationName" maxlength="255" placeholder="Tên địa điểm (bắt buộc), VD: Ngã tư Láng - Đường Láng"
-              (keyup.enter)="addLocation()"
-              style="flex: 2; min-width: 220px; padding: 10px 12px; border-radius: 8px; background: #181520; color: #fff; border: 1px solid #2a2538;"
-            />
-            <input
-              type="text" [(ngModel)]="newLocationAddress" maxlength="255" placeholder="Địa chỉ (không bắt buộc)"
-              (keyup.enter)="addLocation()"
-              style="flex: 1; min-width: 180px; padding: 10px 12px; border-radius: 8px; background: #181520; color: #fff; border: 1px solid #2a2538;"
-            />
+          <div class="field-row new-location">
+            <input type="text" class="grow-2" [(ngModel)]="newLocationName" maxlength="255"
+                   placeholder="Tên địa điểm, VD: Ngã tư Láng – Đường Láng" (keyup.enter)="addLocation()" />
+            <input type="text" class="grow" [(ngModel)]="newLocationAddress" maxlength="255"
+                   placeholder="Địa chỉ (không bắt buộc)" (keyup.enter)="addLocation()" />
             <button type="button" class="btn btn-primary" [disabled]="!newLocationName.trim() || savingLocation" (click)="addLocation()">
-              <i class="bi bi-check-lg"></i> {{ savingLocation ? 'Đang lưu...' : 'Lưu & chọn' }}
+              {{ savingLocation ? 'Đang lưu' : 'Lưu và chọn' }}
             </button>
           </div>
         }
 
         @if (locationError) {
-          <div style="margin-top: 8px; font-size: 12px; color: #ff3366;"><i class="bi bi-exclamation-triangle"></i> {{ locationError }}</div>
+          <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ locationError }}</span>
         } @else if (needsLocation) {
-          <div style="margin-top: 8px; font-size: 12px; color: #ffaa00;">
-            Bắt buộc chọn địa điểm quay video.
-            {{ locations.length ? 'Chưa có trong danh sách thì bấm "Thêm địa điểm mới".' : 'Chưa có địa điểm nào - bấm "Thêm địa điểm mới" để tạo.' }}
-          </div>
+          <span class="field-hint">
+            Cần chọn địa điểm trước khi phân tích.
+            {{ locations.length ? 'Chưa có trong danh sách thì bấm "Thêm địa điểm".' : 'Chưa có địa điểm nào, bấm "Thêm địa điểm" để tạo.' }}
+          </span>
         }
       </div>
-
-    <!-- Start Action -->
-    <div style="margin-top: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 16px;">
-      <span style="font-size: 13px; color: #8a8898;">
-        Nguồn đang chọn: <strong style="color: #fff;">{{ (phase !== 'idle' && session.fileName() ? session.fileName() : selectedFileName) || 'Video mặc định hệ thống' }}</strong>
-      </span>
-      @if (phase === 'uploading') {
-        <button class="btn btn-secondary" (click)="cancelUpload()">
-          <i class="bi bi-x-circle"></i> Hủy upload
-        </button>
-      }
-      @if (phase === 'analyzing') {
-        <button class="btn btn-secondary" (click)="cancelAnalysis()" [disabled]="cancelling">
-          <i class="bi bi-stop-circle"></i> {{ cancelling ? 'Đang huỷ...' : 'Huỷ phân tích' }}
-        </button>
-      }
-      <!-- Không khóa nút khi thiếu địa điểm: bấm vào sẽ được hướng dẫn chọn địa điểm thay vì "không có phản ứng" -->
-      <button class="btn btn-primary start-btn" [disabled]="isBusy" (click)="startAnalysis()">
-        @if (isBusy) {
-          <i class="bi bi-arrow-repeat spin-icon"></i>
-          {{ phase === 'uploading' ? 'Đang Tải Lên' : 'Đang Phân Tích AI' }}... {{ displayPercent | number: '1.0-0' }}%
-        } @else {
-          <i class="bi bi-play-circle-fill"></i>
-          {{ phase === 'completed' || phase === 'failed' ? 'Phân Tích Lại' : 'Bắt Đầu Phân Tích AI' }}
-        }
-      </button>
     </div>
-  </div>
+
+    <div class="panel-footer">
+      <span class="source-current">
+        Nguồn: <strong>{{ (phase !== 'idle' && session.fileName() ? session.fileName() : selectedFileName) || 'Video mặc định của hệ thống' }}</strong>
+      </span>
+      <div class="page-actions">
+        @if (phase === 'uploading') {
+          <button class="btn btn-secondary" (click)="cancelUpload()">Hủy tải lên</button>
+        }
+        @if (phase === 'analyzing') {
+          <button class="btn btn-secondary" (click)="cancelAnalysis()" [disabled]="cancelling">
+            {{ cancelling ? 'Đang hủy' : 'Hủy phân tích' }}
+          </button>
+        }
+        <!-- Không khóa nút khi thiếu địa điểm: bấm vào sẽ được hướng dẫn chọn địa điểm -->
+        <button class="btn btn-primary" [disabled]="isBusy" (click)="startAnalysis()">
+          @if (isBusy) {
+            <i class="bi bi-arrow-repeat spin-icon"></i>
+            {{ phase === 'uploading' ? 'Đang tải lên' : 'Đang phân tích' }} {{ displayPercent | number: '1.0-0' }}%
+          } @else {
+            {{ phase === 'completed' || phase === 'failed' ? 'Phân tích lại' : 'Bắt đầu phân tích' }}
+          }
+        </button>
+      </div>
+    </div>
+  </section>
 
 
-  <!-- =========================
-       TIẾN TRÌNH: TẢI LÊN -> KHỞI ĐỘNG AI -> PHÂN TÍCH -> HOÀN TẤT
-       (tự cuộn tới khi bấm "Bắt đầu"; % hiện cả trên nút và tab trình duyệt)
-  ========================== -->
+  <!-- Tiến trình: tải lên -> khởi động -> phân tích -> hoàn tất -->
   @if (phase !== 'idle') {
-    <div #progressPanel class="progress-panel" [class.is-done]="phase === 'completed'" [class.is-failed]="phase === 'failed' && !cancelled" [class.is-cancelled]="cancelled"
-         role="status" aria-live="polite">
+    <section #progressPanel class="panel section progress-panel"
+             [class.is-done]="phase === 'completed'" [class.is-failed]="phase === 'failed' && !cancelled" [class.is-cancelled]="cancelled"
+             role="status" aria-live="polite">
 
       <ol class="progress-steps">
         @for (step of steps; track $index) {
@@ -168,7 +136,7 @@
               [class.done]="$index < currentStep"
               [class.active]="$index === currentStep && phase !== 'failed'"
               [class.error]="$index === currentStep && phase === 'failed'">
-            <span class="step-dot">
+            <span class="step-dot mono-text">
               @if ($index < currentStep) { <i class="bi bi-check-lg"></i> }
               @else if ($index === currentStep && phase === 'failed') { <i class="bi bi-x-lg"></i> }
               @else { {{ $index + 1 }} }
@@ -179,285 +147,224 @@
       </ol>
 
       <div class="progress-head">
-        <strong class="progress-title">
-          @if (isBusy) { <i class="bi bi-gear-wide-connected spin-icon"></i> }
-          @else if (phase === 'completed') { <i class="bi bi-check-circle-fill"></i> }
-          @else { <i class="bi bi-x-octagon-fill"></i> }
-          {{ statusText }}
-        </strong>
-        <span class="progress-percent">{{ displayPercent | number: '1.0-1' }}%</span>
+        <strong class="progress-title">{{ statusText }}</strong>
+        <span class="progress-percent mono-text">{{ displayPercent | number: '1.0-1' }}%</span>
       </div>
 
-      <div class="progress-track"
-           role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="displayPercent">
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="displayPercent">
         <div class="progress-fill" [class.indeterminate]="currentStep === 1 && isBusy"
              [style.width.%]="currentStep === 1 && isBusy ? 100 : displayPercent"></div>
       </div>
 
       <div class="progress-meta">
         @if (phase !== 'uploading' && taskStatus?.total_frames) {
-          <span><i class="bi bi-film"></i> Khung hình: <strong>{{ taskStatus?.current_frame || 0 }}</strong> / {{ taskStatus?.total_frames }}</span>
+          <span>Khung hình <strong class="mono-text">{{ taskStatus?.current_frame || 0 }} / {{ taskStatus?.total_frames }}</strong></span>
         }
         @if (elapsedText) {
-          <span><i class="bi bi-stopwatch"></i> Đã chạy: <strong>{{ elapsedText }}</strong></span>
+          <span>Đã chạy <strong class="mono-text">{{ elapsedText }}</strong></span>
         }
         @if (etaText) {
-          <span><i class="bi bi-hourglass-split"></i> Còn lại: <strong>{{ etaText }}</strong></span>
+          <span>Còn lại <strong class="mono-text">{{ etaText }}</strong></span>
         }
         @if (phase !== 'uploading') {
-          <span><i class="bi bi-shield-exclamation"></i> Vi phạm phát hiện: <strong class="viol">{{ taskStatus?.violations_detected || 0 }} vụ</strong></span>
+          <span>Vi phạm <strong class="mono-text">{{ taskStatus?.violations_detected || 0 }}</strong></span>
         }
         @if (taskId) {
-          <span class="task-id">Tác vụ: <code>{{ taskId }}</code></span>
+          <span class="task-id">Tác vụ <code>{{ taskId }}</code></span>
         }
       </div>
 
       @if (phase === 'failed' && errorMessage) {
-        <div class="progress-error"><i class="bi bi-exclamation-triangle-fill"></i> {{ errorMessage }}</div>
+        <div class="inline-alert progress-error"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
       }
       @if (isBusy) {
-        <div class="progress-hint">
-          Bạn có thể chuyển sang tab khác — tiến độ vẫn hiện trên tiêu đề tab trình duyệt. Đừng tắt backend trong lúc phân tích.
-        </div>
+        <p class="progress-hint">Có thể chuyển sang tab khác, tiến độ vẫn hiện trên tiêu đề tab. Không tắt backend trong lúc phân tích</p>
       }
-    </div>
+    </section>
   }
 
 
-  <!-- =========================
-       KẾT QUẢ CỦA LẦN PHÂN TÍCH VỪA CHẠY
-  ========================== -->
+  <!-- Kết quả của lần phân tích vừa chạy -->
   @if (phase === 'completed' && taskStatus) {
-    <div style="background: #181520; border: 1px solid #00e650; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-      <strong style="color: #00e650; font-size: 16px;">
-        <i class="bi bi-clipboard-data-fill"></i> Kết quả lần phân tích
-      </strong>
-      <div style="margin-top: 10px; font-size: 13px; color: #8a8898; display: flex; gap: 24px; flex-wrap: wrap;">
-        <span>Số frame: <strong style="color: #fff;">{{ taskStatus.total_frames }}</strong></span>
-        <span>Thời lượng: <strong style="color: #fff;">{{ taskStatus.duration_seconds }}s</strong></span>
-        <span>Thời gian xử lý: <strong style="color: #fff;">{{ taskStatus.processing_time_seconds }}s</strong></span>
-        <span>Vi phạm phát hiện: <strong style="color: #ff3366;">{{ taskStatus.violations_detected }} vụ</strong></span>
+    <section class="panel section">
+      <div class="panel-header">
+        <div>
+          <h3>Kết quả lần phân tích</h3>
+          <p class="run-facts mono-text">
+            {{ taskStatus.total_frames }} khung hình · {{ taskStatus.duration_seconds }} s video · xử lý {{ taskStatus.processing_time_seconds }} s
+          </p>
+        </div>
+        <span class="run-count"><strong class="mono-text">{{ taskStatus.violations_detected }}</strong> vi phạm</span>
       </div>
 
       @if (taskStatus.violations?.length) {
-        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+        <ul class="run-list">
           @for (v of taskStatus.violations; track v.id) {
-            <a [routerLink]="['/admin/violations', v.id]"
-               style="display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #14111c; border: 1px solid #2a2538; border-radius: 6px; text-decoration: none; color: inherit;">
-              @if (v.subject_crop_image) {
-                <img [src]="staticUrl + v.subject_crop_image" alt="Người vi phạm" style="height: 40px; border-radius: 4px; border: 1px solid #ff3366;" />
-              }
-              @if (v.plate_crop_image) {
-                <img [src]="staticUrl + v.plate_crop_image" alt="Biển số" style="height: 32px; border-radius: 4px;" />
-              }
-              <strong style="color: #ffaa00; font-family: monospace;">{{ v.license_plate }}</strong>
-              <span style="color: #8a8898; font-size: 12px;">{{ v.vehicle_type }}</span>
-              <span style="color: #ff3366; font-size: 12px;">{{ v.violation_type }}</span>
-              <span style="margin-left: auto; color: #00d7ff; font-size: 12px;">{{ v.video_time }} · {{ v.violation_code }}</span>
-            </a>
+            <li>
+              <a [routerLink]="['/admin/violations', v.id]">
+                @if (v.subject_crop_image) {
+                  <img class="run-subject" [src]="staticUrl + v.subject_crop_image" alt="Người vi phạm" />
+                }
+                @if (v.plate_crop_image) {
+                  <img class="run-plate" [src]="staticUrl + v.plate_crop_image" alt="Ảnh biển số" />
+                }
+                <span class="plate-tag">{{ v.license_plate }}</span>
+                <span class="muted">{{ v.vehicle_type }}</span>
+                <span>{{ v.violation_type }}</span>
+                <span class="run-time mono-text muted">{{ v.video_time }} · {{ v.violation_code }}</span>
+              </a>
+            </li>
           }
-        </div>
+        </ul>
       } @else {
-        <div style="margin-top: 12px; font-size: 13px; color: #8a8898;">Không phát hiện vi phạm nào trong video này.</div>
+        <div class="empty-state">Không phát hiện vi phạm nào trong video này</div>
       }
-    </div>
+    </section>
   }
 
 
-  <!-- =========================
-       OUTPUT VIDEO PLAYER
-  ========================== -->
-  <div class="video-card">
-    <div class="video-header">
+  <!-- Video kết quả -->
+  <section class="panel section video-panel">
+    <div class="panel-header">
       <div>
-        <h3><i class="bi bi-display-fill text-cyan"></i> 2. Màn Hình Video Kết Quả AI (Output Player)</h3>
-        <p style="margin: 4px 0 0; font-size: 13px; color: #8a8898;">
-          Video kết hợp màn hình chính và thanh Sidebar hiển thị thẻ xe vi phạm cùng ảnh crop biển số
-        </p>
+        <h3>Video kết quả</h3>
+        <p>Khung hình đã đánh dấu kèm thanh bên hiển thị xe vi phạm và ảnh biển số</p>
       </div>
       @if (outputDetails?.video_info?.is_ready) {
-        <span class="video-status">● {{ outputDetails?.video_info?.resolution }} - {{ outputDetails?.video_info?.fps }} FPS</span>
+        <span class="mono-text muted video-spec">{{ outputDetails?.video_info?.resolution }} · {{ outputDetails?.video_info?.fps }} FPS</span>
       }
     </div>
 
     @if (!outputDetails?.video_info?.is_ready && phase !== 'completed') {
-      <div style="padding: 48px 20px; text-align: center; color: #8a8898; background: #14111c; border-radius: 8px;">
-        <i class="bi bi-camera-video-off" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
-        Chưa có video kết quả. Hãy chọn video, chọn địa điểm và bấm "Bắt Đầu Phân Tích AI".
+      <div class="empty-state">
+        <i class="bi bi-camera-video-off"></i>
+        Chưa có video kết quả. Chọn video, chọn địa điểm rồi bấm "Bắt đầu phân tích"
       </div>
     } @else {
-    <div class="video-container" style="background: #000; border-radius: 8px; overflow: hidden; padding: 4px;">
-      <video
-        controls 
-        autoplay 
-        muted 
-        loop
-        playsinline
-        style="width: 100%; max-height: 540px; display: block; border-radius: 6px; background: #000;"
-        [src]="videoUrl"
-      >
-        Trình duyệt của bạn không hỗ trợ thẻ video HTML5.
-      </video>
-    </div>
+      <div class="video-frame">
+        <video controls autoplay muted loop playsinline [src]="videoUrl">
+          Trình duyệt không hỗ trợ phát video
+        </video>
+      </div>
     }
-  </div>
+  </section>
 
 
-  <!-- =========================
-       OUTPUT SUMMARY METRICS (THỰC TẾ)
-  ========================== -->
+  <!-- Số liệu lần phân tích gần nhất -->
   @if (outputDetails) {
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 24px;">
-      
-      <div style="background: #181520; border: 1px solid #2a2538; padding: 18px; border-radius: 8px;">
-        <span style="font-size: 12px; color: #8a8898; display: block;">FILE VIDEO KẾT QUẢ</span>
-        <strong style="font-size: 18px; color: #00d7ff; display: block; margin: 4px 0;">{{ outputDetails.video_info.file_name }}</strong>
-        <div style="font-size: 12px; color: #8a8898;">
-          {{ outputDetails.video_info.file_size_mb }} MB | {{ outputDetails.video_info.duration_seconds }}s ({{ outputDetails.video_info.total_frames }} Frame)
-        </div>
+    <div class="stat-row">
+      <div class="stat">
+        <span class="stat-label">Video kết quả</span>
+        <span class="stat-value stat-file mono-text" [title]="outputDetails.video_info.file_name">{{ outputDetails.video_info.file_name }}</span>
+        <span class="stat-sub mono-text">{{ outputDetails.video_info.file_size_mb }} MB · {{ outputDetails.video_info.duration_seconds }} s · {{ outputDetails.video_info.total_frames }} khung hình</span>
       </div>
-
-      <div style="background: #181520; border: 1px solid #2a2538; padding: 18px; border-radius: 8px;">
-        <span style="font-size: 12px; color: #8a8898; display: block;">PHƯƠNG TIỆN ĐÃ QUÉT</span>
-        <strong style="font-size: 24px; color: #00e650; display: block; margin: 4px 0;">{{ outputDetails.detection_summary.vehicles_scanned }} xe</strong>
-        <div style="font-size: 12px; color: #8a8898;">Lần phân tích gần nhất: {{ outputDetails.video_info.source_video || '—' }}</div>
+      <div class="stat">
+        <span class="stat-label">Phương tiện đã quét</span>
+        <span class="stat-value">{{ outputDetails.detection_summary.vehicles_scanned | number }}</span>
+        <span class="stat-sub">Nguồn: {{ outputDetails.video_info.source_video || '—' }}</span>
       </div>
-
-      <div style="background: #181520; border: 1px solid #2a2538; padding: 18px; border-radius: 8px;">
-        <span style="font-size: 12px; color: #8a8898; display: block;">RẼ PHẢI HỢP LỆ</span>
-        <strong style="font-size: 24px; color: #00d7ff; display: block; margin: 4px 0;">{{ outputDetails.detection_summary.legitimate_turns }} xe</strong>
-        <div style="font-size: 12px; color: #8a8898;">Không tính lỗi vi phạm</div>
+      <div class="stat">
+        <span class="stat-label">Rẽ phải hợp lệ</span>
+        <span class="stat-value">{{ outputDetails.detection_summary.legitimate_turns | number }}</span>
+        <span class="stat-sub">Không tính là vi phạm</span>
       </div>
-
-      <div style="background: #181520; border: 1px solid #2a2538; padding: 18px; border-radius: 8px;">
-        <span style="font-size: 12px; color: #8a8898; display: block;">VI PHẠM ĐÃ GHI NHẬN</span>
-        <strong style="font-size: 24px; color: #ff3366; display: block; margin: 4px 0;">{{ outputDetails.detection_summary.violations_detected }} vụ</strong>
-        <div style="font-size: 12px; color: #8a8898;">
-          {{ outputDetails.detection_summary.unprocessed_count }} chờ duyệt | {{ outputDetails.detection_summary.confirmed_count }} đã xác nhận
-        </div>
+      <div class="stat">
+        <span class="stat-label">Vi phạm ghi nhận</span>
+        <span class="stat-value">{{ outputDetails.detection_summary.violations_detected | number }}</span>
+        <span class="stat-sub">{{ outputDetails.detection_summary.unprocessed_count }} chờ duyệt · {{ outputDetails.detection_summary.confirmed_count }} đã xác nhận</span>
       </div>
-
     </div>
   }
 
 
-  <!-- =========================
-       AI MODELS TELEMETRY GRID (THỐNG KÊ CHI TIẾT CÁC MÔ HÌNH AI)
-  ========================== -->
-  <div class="card" style="background: #14111c; border: 1px solid #2a2538; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
-    <div style="margin-bottom: 16px;">
-      <h3 style="margin: 0; font-size: 18px; color: #fff;">
-        <i class="bi bi-diagram-3-fill text-purple"></i> 3. Thống Kê Chi Tiết 6 Mô Hình AI Deep Learning Trong Pipeline
-      </h3>
-      <p style="margin: 4px 0 0; font-size: 13px; color: #8a8898;">
-        Chi tiết số lượng phát hiện (detections), điểm tin cậy trung bình và file trọng số weights
-      </p>
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
-      @for (key of getModelKeys(); track key) {
-        @let model = outputDetails?.model_stats?.[key];
-        @if (model) {
-          <div style="background: #181520; border: 1px solid #231f2d; border-radius: 8px; padding: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-              <div>
-                <strong style="color: #00d7ff; font-size: 15px;">{{ model.model_name }}</strong>
-                <div style="font-size: 11px; color: #8a8898; margin-top: 2px;">
-                  Weight: <code style="color: #ffaa00;">{{ model.weight_file }}</code>
-                </div>
-              </div>
-              <span style="background: rgba(0, 230, 80, 0.15); color: #00e650; font-weight: bold; font-size: 13px; padding: 4px 8px; border-radius: 4px;">
-                {{ model.avg_confidence | pct: 1 : 100 }} Conf
-              </span>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #8a8898; border-top: 1px solid #231f2d; padding-top: 8px; margin-top: 8px;">
-              <span>Số lượt phát hiện: <strong style="color: #fff;">{{ model.detections }}</strong></span>
-              <span>Classes: <strong style="color: #00d7ff;">{{ model.classes.length ? model.classes.join(', ') : '—' }}</strong></span>
-            </div>
-          </div>
-        }
-      }
-    </div>
-  </div>
-
-
-  <!-- =========================
-       VIOLATIONS DETECTED FROM VIDEO
-  ========================== -->
-  <div class="card" style="background: #14111c; border: 1px solid #2a2538; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+  <!-- Mô hình trong pipeline -->
+  <section class="panel section">
+    <div class="panel-header">
       <div>
-        <h3 style="margin: 0; font-size: 18px; color: #fff;">
-          <i class="bi bi-shield-alert text-rose"></i> 4. Danh Sách Phương Tiện Vi Phạm Trích Xuất Từ Video
-        </h3>
-        <p style="margin: 4px 0 0; font-size: 13px; color: #8a8898;">
-          Các trường hợp AI phát hiện đè vạch hoặc vượt đèn đỏ kèm ảnh crop biển số và snapshot
-        </p>
+        <h3>Mô hình trong pipeline</h3>
+        <p>Số lượt phát hiện, độ tin cậy trung bình và file trọng số của lần phân tích gần nhất</p>
       </div>
+    </div>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mô hình</th>
+            <th>File trọng số</th>
+            <th class="num">Lượt phát hiện</th>
+            <th class="num">Tin cậy TB</th>
+            <th>Lớp nhận diện</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (key of getModelKeys(); track key) {
+            @let model = outputDetails?.model_stats?.[key];
+            @if (model) {
+              <tr>
+                <td>{{ model.model_name }}</td>
+                <td class="mono-text muted">{{ model.weight_file }}</td>
+                <td class="num">{{ model.detections | number }}</td>
+                <td class="num">{{ model.avg_confidence | pct: 1 : 100 }}</td>
+                <td class="classes-cell muted">{{ model.classes.length ? model.classes.join(', ') : '—' }}</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-      <a routerLink="/admin/violations" class="btn btn-secondary">
-        Xem toàn bộ hồ sơ <i class="bi bi-chevron-right"></i>
-      </a>
+
+  <!-- Vi phạm trích xuất từ video -->
+  <section class="panel section">
+    <div class="panel-header">
+      <div>
+        <h3>Vi phạm trích xuất từ video</h3>
+        <p>Ảnh hiện trường, ảnh biển số và ảnh cận cảnh người vi phạm</p>
+      </div>
+      <a routerLink="/admin/violations" class="action-btn">Xem tất cả <i class="bi bi-arrow-right"></i></a>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;">
+    <div class="evidence-grid">
       @for (v of outputDetails?.violations; track v.id) {
-        <div style="background: #181520; border: 1px solid #2a2538; border-radius: 8px; overflow: hidden;">
-          
-          <!-- Snapshot image preview -->
-          <div style="position: relative; height: 160px; background: #000; overflow: hidden;">
+        <article class="evidence-card">
+          <div class="evidence-media">
             @if (v.evidence_image) {
-              <img [src]="staticUrl + v.evidence_image" alt="Bằng chứng" style="width: 100%; height: 100%; object-fit: cover;" />
+              <img [src]="staticUrl + v.evidence_image" alt="Ảnh hiện trường" />
             } @else {
-              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #8a8898;">
-                <i class="bi bi-camera-reels" style="font-size: 32px;"></i>
-              </div>
+              <div class="evidence-placeholder"><i class="bi bi-camera-reels"></i></div>
             }
-
-            <span style="position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.75); color: #00d7ff; font-size: 11px; padding: 2px 6px; border-radius: 4px;">
-              {{ v.violation_code }}
-            </span>
-
-            <span style="position: absolute; top: 8px; right: 8px; background: rgba(255, 51, 102, 0.85); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px;">
-              {{ v.violation_type }}
-            </span>
-
-            <!-- Lỗi không đội mũ: ảnh cận cảnh người vi phạm đặt nổi ở góc dưới trái -->
+            <span class="media-tag mono-text">{{ v.violation_code }}</span>
             @if (v.subject_crop_image) {
-              <img [src]="staticUrl + v.subject_crop_image" alt="Người vi phạm"
-                   style="position: absolute; left: 8px; bottom: 8px; height: 110px; max-width: 45%; object-fit: contain; background: #000; border: 2px solid #ff3366; border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.6);" />
+              <img class="evidence-subject" [src]="staticUrl + v.subject_crop_image" alt="Người vi phạm" />
             }
           </div>
 
-          <!-- Card Body -->
-          <div style="padding: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div class="evidence-body">
+            <div class="evidence-top">
               <div>
-                <strong style="font-size: 17px; color: #ffaa00; letter-spacing: 1px; font-family: monospace;">{{ v.license_plate }}</strong>
-                <div style="font-size: 12px; color: #8a8898;">{{ v.vehicle_type }}</div>
+                <span class="plate-tag">{{ v.license_plate }}</span>
+                <span class="evidence-type">{{ v.violation_type }} · {{ v.vehicle_type }}</span>
               </div>
-
               @if (v.plate_crop_image) {
-                <img [src]="staticUrl + v.plate_crop_image" alt="Crop" style="height: 36px; border: 1px solid #00d7ff; border-radius: 4px;" />
+                <img class="evidence-plate" [src]="staticUrl + v.plate_crop_image" alt="Ảnh biển số" />
               }
             </div>
-
-            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #8a8898; margin-bottom: 12px; border-top: 1px solid #231f2d; padding-top: 8px;">
-              <span>Mốc video: <strong style="color: #00d7ff;">{{ v.video_time }}</strong></span>
-              <span>Độ tin cậy: <strong style="color: #00e650;">{{ v.confidence_overall | pct }}</strong></span>
-              <span [style.color]="v.status === 'Đã xác nhận' ? '#00e650' : '#ffaa00'">{{ v.status }}</span>
+            <div class="evidence-facts">
+              <span class="mono-text">{{ v.video_time }}</span>
+              <span class="mono-text">{{ v.confidence_overall | pct }}</span>
+              <span class="dot-status"
+                    [class.is-confirmed]="v.status === 'Đã xác nhận'"
+                    [class.is-pending]="v.status === 'Chưa xử lý'"
+                    [class.is-rejected]="v.status === 'Từ chối'">{{ v.status }}</span>
             </div>
-
-            <a class="btn btn-secondary" style="width: 100%; text-align: center; font-size: 13px;" [routerLink]="['/admin/violations', v.id]">
-              Xem Chi Tiết Hồ Sơ <i class="bi bi-chevron-right"></i>
-            </a>
+            <a class="btn btn-secondary evidence-link" [routerLink]="['/admin/violations', v.id]">Xem hồ sơ</a>
           </div>
-
-        </div>
+        </article>
+      } @empty {
+        <div class="empty-state evidence-empty">Chưa có vi phạm nào</div>
       }
     </div>
-  </div>
+  </section>
 
 </div>
-
