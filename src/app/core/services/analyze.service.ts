@@ -98,20 +98,14 @@ export interface OutputVideoDetails {
   violations: ViolationItem[];
 }
 
-export interface LatestAnalysisSummary {
-  video_name: string;
-  source_video: string;
-  video_size_mb: number;
-  resolution: string;
-  total_frames: number;
-  fps: number;
-  duration_seconds: number;
-  vehicles_scanned: number;
-  legitimate_turns: number;
-  violations_count: number;
-  video_stream_url: string;
-  static_video_url: string;
-  violations: any[];
+/** Video mẫu trên máy chủ (không bắt buộc có). */
+export interface SampleVideoInfo {
+  available: boolean;
+  name?: string;
+  file_size_mb?: number;
+  width?: number | null;
+  height?: number | null;
+  duration_sec?: number | null;
 }
 
 @Injectable({
@@ -194,8 +188,8 @@ export class AnalyzeService {
     return this.http.get<OutputVideoDetails>(`${this.apiUrl}/output/details`);
   }
 
-  getLatestSummary(): Observable<LatestAnalysisSummary> {
-    return this.http.get<LatestAnalysisSummary>(`${this.apiUrl}/summary/latest`);
+  getSampleVideo(): Observable<SampleVideoInfo> {
+    return this.http.get<SampleVideoInfo>(`${this.apiUrl}/sample`);
   }
 
   getVideoStreamUrl(): string {

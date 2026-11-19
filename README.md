@@ -1,59 +1,49 @@
-# TrafficAiFrontend
+# Traffic AI — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.8.
+Giao diện web (Angular 22, zoneless, signals) cho hệ thống phát hiện vi phạm giao thông từ video camera.
+Backend FastAPI ở repo `traffic-ai-backend`.
 
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Chạy trên máy
 
 ```bash
-ng generate component component-name
+npm install
+npm start            # http://localhost:4200, gọi backend tại http://localhost:8000 (src/environments/environment.ts)
+npm test             # Vitest
+npm run build        # bản production vào dist/
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Backend phải đang chạy (`python server.py`). Backend cho phép mọi cổng trên `localhost` / `127.0.0.1`. Địa chỉ khác
+(IP mạng LAN, tên miền) thêm vào `CORS_ORIGINS` trong `.env` của backend.
 
-```bash
-ng generate --help
-```
+Tài khoản tự đăng ký phải được quản trị viên kích hoạt ở trang **Tài khoản** (`/admin/users`) trước khi đăng nhập.
 
-## Building
+## Triển khai lên Vercel
 
-To build the project run:
+`vercel.json` chạy `npm run build:vercel`. Script `scripts/set-env.mjs` ghi `environment.prod.ts` từ biến môi trường:
 
-```bash
-ng build
-```
+- `API_URL`: địa chỉ HTTPS của backend (VD: `https://abc.trycloudflare.com`, không có `/` cuối).
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Ở backend đặt `CORS_ORIGINS=https://<du-an>.vercel.app` và `CROSS_SITE_COOKIE=1`.
 
-## Running unit tests
+Khi frontend và backend khác tên miền, cookie dùng để tải ảnh / video bằng chứng là cookie phân vùng (*Partitioned*).
+Cookie này chỉ được gửi khi trang đang mở là frontend. Vì vậy:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- `<img>`, `<video>` trong trang dùng URL trực tiếp tới backend.
+- Mở ảnh ở tab mới / tải về phải đi qua `MediaService` (tải bằng token rồi mở bản blob), không dùng link thẳng.
+- Video kết quả ở trang Lịch sử phát trong hộp thoại ngay trên trang.
 
-```bash
-ng test
-```
+## Cấu trúc `src/app`
 
-## Running end-to-end tests
+| Thư mục | Nội dung |
+|---|---|
+| `core/services` | Gọi API: auth, analyze, violation, location, statistics, system (trạng thái + thông báo), user-admin, media |
+| `core/services/analysis-session.service.ts` | Phiên phân tích ở cấp ứng dụng: chuyển trang không mất tiến độ, F5 thì hỏi backend để hiện lại |
+| `core/interceptors` | Gắn `Authorization: Bearer` cho API và file `/static/...`; 401 thì về trang đăng nhập |
+| `core/guards` | `authGuard`, `adminGuard`, `guestGuard` |
+| `hompage`, `auth` | Trang chủ, đăng nhập, đăng ký |
+| `layout` | Header (đồng hồ, trạng thái máy phân tích, thông báo) + sidebar |
+| `dashboard`, `video-analysis`, `history` | Tổng quan, tải video lên và theo dõi phân tích, lịch sử các lần phân tích |
+| `violations` | Danh sách (lọc, xuất Excel/PDF) và chi tiết hồ sơ (duyệt / từ chối) |
+| `statistics`, `locations`, `account`, `users` | Thống kê, địa điểm, đổi mật khẩu, quản lý tài khoản (admin) |
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Giao diện theo hệ thống thiết kế trong `src/styles.css` (token màu ở `:root`).

@@ -7,6 +7,8 @@ export interface User {
   full_name: string;
   role: UserRole;
   created_at: string;
+  /** false: tài khoản mới đăng ký đang chờ quản trị viên kích hoạt, hoặc đã bị khóa */
+  is_active: boolean;
 }
 
 export interface LoginResponse {

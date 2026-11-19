@@ -51,7 +51,7 @@ export class Users implements OnInit {
   }
 
   toggleActive(u: AdminUser): void {
-    const action = u.is_active ? 'Khóa' : 'Mở khóa';
+    const action = u.is_active ? 'Khóa' : 'Kích hoạt';
     if (u.is_active && !confirm(`Khóa tài khoản ${u.email}? Người này sẽ bị đăng xuất khỏi mọi thiết bị.`)) return;
     this.run(u, this.service.update(u.id, { is_active: !u.is_active }), `${action} tài khoản ${u.email} thành công`);
   }

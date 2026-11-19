@@ -19,7 +19,7 @@
     <div class="panel-header">
       <div>
         <h3>Chọn video</h3>
-        <p>Tải video từ máy tính hoặc dùng video mẫu có sẵn</p>
+        <p>{{ sample?.available ? 'Tải video từ máy tính hoặc dùng video mẫu có sẵn' : 'Tải video từ máy tính' }}</p>
       </div>
     </div>
 
@@ -44,17 +44,19 @@
           </label>
         </div>
 
-        <div class="source-option" [class.selected]="selectedFile === null && selectedFileName === '21s_vidnew.mov'">
-          <i class="bi bi-camera-reels source-icon"></i>
-          <div class="source-text">
-            <h4>Video mẫu</h4>
-            <p>Giao lộ Nguyễn Trãi – Khuất Duy Tiến, 4K, 21 giây</p>
-            @if (selectedFile === null && selectedFileName === '21s_vidnew.mov') {
-              <span class="source-picked"><i class="bi bi-check2"></i> Đã chọn video mẫu</span>
-            }
+        @if (sample?.available) {
+          <div class="source-option" [class.selected]="usingSample">
+            <i class="bi bi-camera-reels source-icon"></i>
+            <div class="source-text">
+              <h4>Video mẫu</h4>
+              <p><span class="mono-text">{{ sample?.name }}</span> · {{ sampleDescription }}</p>
+              @if (usingSample) {
+                <span class="source-picked"><i class="bi bi-check2"></i> Đã chọn video mẫu</span>
+              }
+            </div>
+            <button class="btn btn-secondary" [disabled]="isBusy" (click)="selectSampleVideo()">Dùng video mẫu</button>
           </div>
-          <button class="btn btn-secondary" [disabled]="isBusy" (click)="selectSampleVideo()">Dùng video mẫu</button>
-        </div>
+        }
 
       </div>
 
@@ -99,7 +101,7 @@
 
     <div class="panel-footer">
       <span class="source-current">
-        Nguồn: <strong>{{ (phase !== 'idle' && session.fileName() ? session.fileName() : selectedFileName) || 'Video mặc định của hệ thống' }}</strong>
+        Nguồn: <strong>{{ (phase !== 'idle' && session.fileName() ? session.fileName() : selectedFileName) || 'Chưa chọn video' }}</strong>
       </span>
       <div class="page-actions">
         @if (phase === 'uploading') {
@@ -264,14 +266,14 @@
         <span class="stat-sub">Nguồn: {{ outputDetails.video_info.source_video || '—' }}</span>
       </div>
       <div class="stat">
-        <span class="stat-label">Rẽ phải hợp lệ</span>
+        <span class="stat-label">Rẽ hợp lệ</span>
         <span class="stat-value">{{ outputDetails.detection_summary.legitimate_turns | number }}</span>
-        <span class="stat-sub">Không tính là vi phạm</span>
+        <span class="stat-sub">Rẽ trái và rẽ phải đúng đèn</span>
       </div>
       <div class="stat">
         <span class="stat-label">Vi phạm ghi nhận</span>
-        <span class="stat-value">{{ outputDetails.detection_summary.violations_detected | number }}</span>
-        <span class="stat-sub">{{ outputDetails.detection_summary.unprocessed_count }} chờ duyệt · {{ outputDetails.detection_summary.confirmed_count }} đã xác nhận</span>
+        <span class="stat-value">{{ outputDetails.violations.length | number }}</span>
+        <span class="stat-sub">{{ latestRunCount('Chưa xử lý') }} chờ duyệt · {{ latestRunCount('Đã xác nhận') }} đã xác nhận</span>
       </div>
     </div>
   }
@@ -320,7 +322,7 @@
     <div class="panel-header">
       <div>
         <h3>Vi phạm trích xuất từ video</h3>
-        <p>Ảnh hiện trường, ảnh biển số và ảnh cận cảnh người vi phạm</p>
+        <p>Lần phân tích gần nhất: ảnh hiện trường, ảnh biển số và ảnh cận cảnh người vi phạm</p>
       </div>
       <a routerLink="/admin/violations" class="action-btn">Xem tất cả <i class="bi bi-arrow-right"></i></a>
     </div>

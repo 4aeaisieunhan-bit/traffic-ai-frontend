@@ -7,6 +7,7 @@ import {
   REJECT_HAS_HELMET, ViolationService, ViolationItem, ViolationReview, ViolationStatus,
 } from '../../core/services/violation.service';
 import { PctPipe } from '../../core/pipes/pct.pipe';
+import { MediaService } from '../../core/services/media.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -21,6 +22,8 @@ export class ViolationDetail implements OnInit {
   private violationService = inject(ViolationService);
   private cdr = inject(ChangeDetectorRef);
   staticUrl = environment.staticUrl;
+  /** Mở / tải ảnh gốc qua blob (link thẳng tới backend bị 401 khi frontend và backend khác tên miền). */
+  readonly media = inject(MediaService);
   private router = inject(Router);
   private auth = inject(AuthService);
   /** Xoá hồ sơ: chỉ quản trị viên. */

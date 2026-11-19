@@ -6,7 +6,6 @@ import { environment } from '../../../environments/environment';
 import { User, UserRole } from '../models/user.model';
 
 export interface AdminUser extends User {
-  is_active: boolean;
   active_sessions: number;
 }
 

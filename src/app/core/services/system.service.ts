@@ -3,7 +3,7 @@
 // Dùng chung cho header và sidebar: chỉ 1 vòng hỏi backend (30 s), tạm dừng khi tab bị ẩn.
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, forkJoin, of } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface SystemStatus {
@@ -26,15 +26,6 @@ export interface SystemNotification {
   text: string;
   time: string;     // ISO
   link: string;
-}
-
-export interface PublicStats {
-  locations: number;
-  videos_analyzed: number;
-  vehicles_scanned: number;
-  violations: number;
-  avg_confidence: number | null;
-  videos_uploaded: number;
 }
 
 const POLL_MS = 30_000;
@@ -88,11 +79,6 @@ export class SystemService {
     const newest = this.notifications()[0]?.time ?? new Date().toISOString().slice(0, 19);
     this.seenAt.set(newest);
     try { localStorage.setItem(SEEN_KEY, newest); } catch { /* storage bị chặn */ }
-  }
-
-  /** Số liệu tổng hợp cho trang chủ (không cần đăng nhập). */
-  publicStats(): Observable<PublicStats> {
-    return this.http.get<PublicStats>(`${this.api}/public/stats`);
   }
 
   private readSeen(): string {

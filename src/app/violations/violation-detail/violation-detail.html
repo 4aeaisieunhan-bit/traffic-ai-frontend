@@ -38,8 +38,8 @@
         </div>
         @if (violation.evidence_image) {
           <div class="page-actions">
-            <a [href]="staticUrl + violation.evidence_image" target="_blank" class="action-btn" title="Mở ảnh gốc"><i class="bi bi-arrows-angle-expand"></i> Ảnh gốc</a>
-            <a [href]="staticUrl + violation.evidence_image" download class="action-btn"><i class="bi bi-download"></i> Tải về</a>
+            <button type="button" class="action-btn" title="Mở ảnh gốc" (click)="media.open(violation.evidence_image)"><i class="bi bi-arrows-angle-expand"></i> Ảnh gốc</button>
+            <button type="button" class="action-btn" (click)="media.download(violation.evidence_image)"><i class="bi bi-download"></i> Tải về</button>
           </div>
         }
       </div>
@@ -58,15 +58,15 @@
       <div class="crops">
         @if (violation.subject_crop_image) {
           <div class="crop-item">
-            <a [href]="staticUrl + violation.subject_crop_image" target="_blank" class="crop-subject" title="Mở ảnh gốc">
+            <button type="button" class="crop-subject" title="Mở ảnh gốc" (click)="media.open(violation.subject_crop_image)">
               <img [src]="staticUrl + violation.subject_crop_image" alt="Ảnh cận cảnh người vi phạm" />
-            </a>
+            </button>
             <div class="crop-info">
               <span class="crop-title">Ảnh cận cảnh người vi phạm</span>
               <p>Phần đầu không đội mũ được khoanh lại, cắt từ khung hình lúc hệ thống kết luận vi phạm</p>
               <div class="crop-meta">
                 <span>Độ tin cậy <strong class="mono-text">{{ violation.confidence_violation | pct }}</strong></span>
-                <a [href]="staticUrl + violation.subject_crop_image" download class="action-btn"><i class="bi bi-download"></i> Tải về</a>
+                <button type="button" class="action-btn" (click)="media.download(violation.subject_crop_image)"><i class="bi bi-download"></i> Tải về</button>
               </div>
             </div>
           </div>

@@ -11,7 +11,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  const isApi = req.url.startsWith(environment.apiUrl);
+  // API + file media của backend (/static/...): backend chấp nhận Bearer cho cả hai (xem MediaService)
+  const isApi = req.url.startsWith(environment.apiUrl) || req.url.startsWith(`${environment.staticUrl}/static/`);
   const token = auth.getToken();
   // withCredentials: để trình duyệt nhận / gửi cookie HttpOnly dùng cho ảnh bằng chứng & video (<img>, <video>)
   const authReq = isApi

@@ -95,6 +95,19 @@
   border-top: 1px solid var(--line);
 }
 
+.crop-subject {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  border-radius: 6px;
+}
+.crop-subject:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .crop-subject img {
   display: block;
   height: 120px;

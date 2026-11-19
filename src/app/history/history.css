@@ -118,3 +118,43 @@
   border-top: 1px solid var(--line);
   font-size: 13px;
 }
+
+/* Hộp thoại phát video kết quả */
+.video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 9, 13, 0.78);
+}
+.video-modal-box {
+  width: min(1200px, 100%);
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.video-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.video-modal-head strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.video-modal-head .icon-btn {
+  margin-left: auto;
+}
+.video-modal video {
+  display: block;
+  width: 100%;
+  max-height: 75vh;
+  background: #000;
+}

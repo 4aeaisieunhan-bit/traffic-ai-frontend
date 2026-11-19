@@ -73,9 +73,9 @@
               <td class="muted mono-text">{{ t.created_at | date: 'HH:mm dd/MM/yyyy' }}</td>
               <td class="actions">
                 @if (t.status === 'completed' && t.output_video_url) {
-                  <a class="icon-btn" [href]="staticUrl + t.output_video_url" target="_blank" rel="noopener" title="Xem video kết quả">
+                  <button type="button" class="icon-btn" (click)="playing = t" title="Xem video kết quả" aria-label="Xem video kết quả">
                     <i class="bi bi-play-btn"></i>
-                  </a>
+                  </button>
                 }
                 @if (t.status === 'pending' || t.status === 'processing') {
                   <button class="icon-btn warn" (click)="cancel(t)" [disabled]="busyId === t.task_id" title="Huỷ phân tích">
@@ -110,4 +110,19 @@
       </div>
     }
   </div>
+
+  <!-- Video kết quả: phát ngay trong trang (tab mới mở thẳng backend không có cookie khi khác tên miền) -->
+  @if (playing; as p) {
+    <div class="video-modal" (click)="playing = null">
+      <div class="video-modal-box" role="dialog" aria-modal="true" [attr.aria-label]="'Video kết quả ' + (p.video_name ?? p.task_id)"
+           (click)="$event.stopPropagation()">
+        <div class="video-modal-head">
+          <strong [title]="p.video_name ?? ''">{{ p.video_name ?? p.task_id }}</strong>
+          <span class="muted small">{{ p.location ?? '' }}</span>
+          <button type="button" class="icon-btn" (click)="playing = null" aria-label="Đóng"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <video controls autoplay playsinline [src]="staticUrl + p.output_video_url">Trình duyệt không hỗ trợ phát video</video>
+      </div>
+    </div>
+  }
 </div>

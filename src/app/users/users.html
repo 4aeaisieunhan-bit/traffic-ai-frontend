@@ -3,7 +3,7 @@
   <div class="page-header">
     <div>
       <h1 class="page-title">Quản lý tài khoản</h1>
-      <p class="page-subtitle">Phân quyền, khóa tài khoản và cấp mật khẩu tạm khi người dùng quên mật khẩu</p>
+      <p class="page-subtitle">Kích hoạt tài khoản mới đăng ký, phân quyền, khóa tài khoản và cấp mật khẩu tạm khi người dùng quên mật khẩu</p>
     </div>
     <div class="page-actions">
       <button class="btn btn-secondary" (click)="load()"><i class="bi bi-arrow-clockwise"></i> Làm mới</button>
@@ -61,7 +61,7 @@
               </td>
               <td>
                 <span class="dot-status" [class.is-confirmed]="u.is_active" [class.is-error]="!u.is_active">
-                  {{ u.is_active ? 'Hoạt động' : 'Đã khóa' }}
+                  {{ u.is_active ? 'Hoạt động' : 'Chờ kích hoạt / đã khóa' }}
                 </span>
               </td>
               <td class="num">{{ u.active_sessions }}</td>
@@ -74,7 +74,7 @@
                 <button class="icon-btn" [class.danger]="u.is_active" (click)="toggleActive(u)"
                         [disabled]="isMe(u) || busyId === u.id"
                         [title]="isMe(u) ? 'Không thể tự khóa tài khoản của mình' : ''">
-                  {{ u.is_active ? 'Khóa' : 'Mở khóa' }}
+                  {{ u.is_active ? 'Khóa' : 'Kích hoạt' }}
                 </button>
               </td>
             </tr>

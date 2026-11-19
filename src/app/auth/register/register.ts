@@ -48,9 +48,11 @@ export class Register {
     this.loading.set(true);
     const email = this.email.trim().toLowerCase();
     this.authService.register(this.fullName.trim(), email, this.password).subscribe({
-      next: () => {
+      next: (user) => {
         this.loading.set(false);
-        this.router.navigate(['/login'], { queryParams: { registered: 1, email } });
+        // Mặc định tài khoản mới phải được quản trị viên kích hoạt rồi mới đăng nhập được
+        const queryParams = user.is_active ? { registered: 1, email } : { registered: 1, pending: 1, email };
+        this.router.navigate(['/login'], { queryParams });
       },
       error: (err) => {
         this.loading.set(false);

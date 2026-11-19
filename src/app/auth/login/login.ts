@@ -30,7 +30,11 @@ export class Login {
     const q = this.route.snapshot.queryParamMap;
     if (q.get('registered')) {
       this.email = q.get('email') ?? '';
-      this.infoMessage.set('Đăng ký thành công! Vui lòng đăng nhập.');
+      this.infoMessage.set(
+        q.get('pending')
+          ? 'Đăng ký thành công! Tài khoản cần quản trị viên kích hoạt trước khi đăng nhập.'
+          : 'Đăng ký thành công! Vui lòng đăng nhập.',
+      );
     } else if (q.get('expired')) {
       this.infoMessage.set('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.');
     } else if (q.get('loggedOut')) {

@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild,
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AnalyzeService, OutputVideoDetails } from '../core/services/analyze.service';
+import { AnalyzeService, OutputVideoDetails, SampleVideoInfo } from '../core/services/analyze.service';
 import { ANALYSIS_STEPS, AnalysisSessionService } from '../core/services/analysis-session.service';
 import { PctPipe } from '../core/pipes/pct.pipe';
 import { LocationItem, LocationService, apiErrorMessage } from '../core/services/location.service';
@@ -41,6 +41,10 @@ export class VideoAnalysis implements OnInit, OnDestroy {
 
   outputDetails: OutputVideoDetails | null = null;
   loadingDetails = true;
+
+  // Video mẫu trên máy chủ: không có trong Git nên có thể không tồn tại -> ẩn lựa chọn
+  sample: SampleVideoInfo | null = null;
+  usingSample = false;
 
   // Địa điểm quay video - bắt buộc khi upload file
   locations: LocationItem[] = [];
@@ -90,6 +94,7 @@ export class VideoAnalysis implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadOutputDetails();
     this.loadLocations();
+    this.loadSample();
     this.session.resume();   // vừa tải lại trang (F5) mà backend đang phân tích -> hiện lại tiến trình
     if (this.session.phase() !== 'idle' && !this.selectedFileName) this.selectedFileName = this.session.fileName();
   }
@@ -111,6 +116,30 @@ export class VideoAnalysis implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  private loadSample(): void {
+    this.analyzeService.getSampleVideo().subscribe({
+      next: (info) => {
+        this.sample = info;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.sample = { available: false };
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  /** '3840x2160 · 21 giây' từ thông tin video mẫu. */
+  get sampleDescription(): string {
+    const s = this.sample;
+    if (!s?.available) return '';
+    const parts = [];
+    if (s.width && s.height) parts.push(`${s.width}x${s.height}`);
+    if (s.duration_sec) parts.push(`${Math.round(s.duration_sec)} giây`);
+    if (s.file_size_mb) parts.push(`${s.file_size_mb} MB`);
+    return parts.join(' · ');
   }
 
   addLocation(): void {
@@ -169,19 +198,29 @@ export class VideoAnalysis implements OnInit, OnDestroy {
     }
 
     this.selectedFile = file;
+    this.usingSample = false;
     this.selectedFileName = file.name;
     this.selectedFileSize = this.formatSize(file.size);
   }
 
   selectSampleVideo(): void {
+    if (!this.sample?.available) return;
     this.selectedFile = null;
+    this.usingSample = true;
     this.fileError = '';
-    this.selectedFileName = '21s_vidnew.mov';
+    this.selectedFileName = this.sample.name ?? '';
     this.selectedFileSize = 'video mẫu có sẵn trên máy chủ';
   }
 
   startAnalysis(): void {
     if (this.isBusy) return;
+    if (!this.selectedFile && !this.usingSample) {
+      this.fileError = this.sample?.available
+        ? 'Vui lòng chọn video từ máy tính hoặc bấm "Dùng video mẫu"'
+        : 'Vui lòng chọn video từ máy tính';
+      this.cdr.markForCheck();
+      return;
+    }
     if (this.needsLocation) {
       // Hướng dẫn rõ ràng thay vì "bấm không có phản ứng"
       this.locationError = this.locations.length
@@ -201,7 +240,8 @@ export class VideoAnalysis implements OnInit, OnDestroy {
     }
     this.locationAttention = false;
     this.locationError = '';
-    this.session.start(this.selectedFile || undefined, this.selectedLocationId, this.selectedFileName || '21s_vidnew.mov');
+    // Không gửi file = backend dùng video mẫu
+    this.session.start(this.selectedFile || undefined, this.selectedLocationId, this.selectedFileName);
     this.scrollToProgress();
   }
 
@@ -220,6 +260,11 @@ export class VideoAnalysis implements OnInit, OnDestroy {
     return bytes >= 1024 * 1024 * 1024
       ? `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
       : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  /** Số vi phạm của lần phân tích gần nhất theo trạng thái duyệt. */
+  latestRunCount(status: string): number {
+    return this.outputDetails?.violations.filter((v) => v.status === status).length ?? 0;
   }
 
   getModelKeys(): string[] {

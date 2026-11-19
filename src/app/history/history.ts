@@ -1,5 +1,5 @@
 // Lịch sử các lần phân tích video: theo dõi tiến độ, xem kết quả, huỷ lần đang chạy, xoá (quản trị viên).
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, computed, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -44,6 +44,10 @@ export class History implements OnInit, OnDestroy {
   errorMessage = '';
   successMessage = '';
   busyId = '';                    // task đang được huỷ / xoá
+  playing: AnalysisTaskSummary | null = null;   // lần phân tích đang xem video kết quả
+
+  @HostListener('document:keydown.escape')
+  closePlayer(): void { this.playing = null; }
 
   private sub?: Subscription;
   private timer: ReturnType<typeof setTimeout> | null = null;
