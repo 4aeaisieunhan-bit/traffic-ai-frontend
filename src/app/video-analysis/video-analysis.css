@@ -1,0 +1,398 @@
+.analyze-page {
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-main, #ffffff);
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text-sub, #8a8898);
+  margin-top: 4px;
+}
+
+/* Source Card */
+.source-card {
+  padding: 24px;
+  background: var(--bg-card, #14111c);
+  border: 1px solid var(--border-subtle, #2a2538);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.card-title-box h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-main, #ffffff);
+}
+
+.card-title-box p {
+  font-size: 13px;
+  color: var(--text-sub, #8a8898);
+  margin-top: 4px;
+}
+
+.source-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.source-option {
+  padding: 24px;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.source-option:hover {
+  background: rgba(0, 215, 255, 0.08);
+  border-color: rgba(0, 215, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.source-option.selected {
+  border-color: #00d7ff;
+  border-style: solid;
+  background: rgba(0, 215, 255, 0.1);
+  box-shadow: 0 0 16px rgba(0, 215, 255, 0.15);
+}
+
+.source-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.source-option h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.source-option p {
+  font-size: 12px;
+  color: #8a8898;
+  margin: 6px 0 16px 0;
+}
+
+.upload-btn {
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* Video Card */
+.video-card {
+  background: var(--bg-card, #14111c);
+  border: 1px solid var(--border-subtle, #2a2538);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.video-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(20, 17, 28, 0.9);
+  border-bottom: 1px solid var(--border-subtle, #2a2538);
+}
+
+.video-header h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.video-status {
+  font-size: 12px;
+  font-weight: 700;
+  color: #00e650;
+  background: rgba(0, 230, 80, 0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.video-container {
+  padding: 16px;
+  background: #000;
+}
+
+.spin-icon {
+  display: inline-block;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   KHUNG TIẾN TRÌNH PHÂN TÍCH
+   ========================================================= */
+.progress-panel {
+  background: #181520;
+  border: 1px solid #00d7ff;
+  border-radius: 10px;
+  padding: 20px 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 0 24px rgba(0, 215, 255, 0.18);
+  scroll-margin-top: 90px;
+}
+
+.progress-panel.is-done {
+  border-color: #00e650;
+  box-shadow: 0 0 24px rgba(0, 230, 80, 0.15);
+}
+
+.progress-panel.is-failed {
+  border-color: #ff3366;
+  box-shadow: 0 0 24px rgba(255, 51, 102, 0.15);
+}
+
+/* --- 4 bước --- */
+.progress-steps {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.progress-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: #6b6880;
+  font-size: 13px;
+  position: relative;
+}
+
+.progress-step:not(:last-child)::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: #2a2538;
+  margin-left: 4px;
+  min-width: 12px;
+}
+
+.progress-step.done:not(:last-child)::after {
+  background: #00e650;
+}
+
+.step-dot {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  border: 2px solid #2a2538;
+  background: #14111c;
+}
+
+.step-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.progress-step.done {
+  color: #c9f7d8;
+}
+
+.progress-step.done .step-dot {
+  background: #00e650;
+  border-color: #00e650;
+  color: #0b1a10;
+}
+
+.progress-step.active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.progress-step.active .step-dot {
+  border-color: #00d7ff;
+  color: #00d7ff;
+  box-shadow: 0 0 0 4px rgba(0, 215, 255, 0.18);
+  animation: step-pulse 1.6s ease-in-out infinite;
+}
+
+.progress-step.error {
+  color: #ff3366;
+  font-weight: 600;
+}
+
+.progress-step.error .step-dot {
+  background: #ff3366;
+  border-color: #ff3366;
+  color: #fff;
+}
+
+@keyframes step-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(0, 215, 255, 0.18); }
+  50% { box-shadow: 0 0 0 7px rgba(0, 215, 255, 0.06); }
+}
+
+/* --- tiêu đề + % --- */
+.progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.progress-title {
+  color: #00d7ff;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.is-done .progress-title { color: #00e650; }
+.is-failed .progress-title { color: #ff3366; }
+
+.progress-percent {
+  color: #00e650;
+  font-weight: 800;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.is-failed .progress-percent { color: #ff3366; }
+
+/* --- thanh % --- */
+.progress-track {
+  background: #2a2538;
+  height: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #00d7ff, #00e650);
+  transition: width 0.6s ease;
+  background-size: 200% 100%;
+  animation: progress-shine 2s linear infinite;
+}
+
+.is-done .progress-fill { animation: none; background: #00e650; }
+.is-failed .progress-fill { animation: none; background: #ff3366; }
+
+/* Đang nạp mô hình: chưa có % -> thanh chạy qua lại */
+.progress-fill.indeterminate {
+  background: repeating-linear-gradient(
+    -45deg, rgba(0, 215, 255, 0.55) 0 12px, rgba(0, 215, 255, 0.2) 12px 24px
+  );
+  background-size: 34px 34px;
+  animation: progress-stripes 0.8s linear infinite;
+}
+
+@keyframes progress-shine {
+  from { background-position: 200% 0; }
+  to { background-position: 0 0; }
+}
+
+@keyframes progress-stripes {
+  from { background-position: 0 0; }
+  to { background-position: 34px 0; }
+}
+
+/* --- thông tin --- */
+.progress-meta {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  font-size: 13px;
+  color: #8a8898;
+}
+
+.progress-meta strong {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-meta strong.viol { color: #ff3366; }
+
+.progress-meta .task-id { margin-left: auto; }
+
+.progress-error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(255, 51, 102, 0.1);
+  color: #ff8fa8;
+  font-size: 13px;
+}
+
+.progress-hint {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6b6880;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill, .progress-fill.indeterminate, .progress-step.active .step-dot { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .step-label { display: none; }
+  .progress-step.active .step-label { display: inline; }
+  .progress-meta .task-id { margin-left: 0; }
+}
+
+/* Nút bị khóa (đang phân tích): mờ rõ ràng để không bị tưởng là bấm được */
+.start-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: saturate(0.4);
+}
+
+/* Bấm "Bắt đầu" khi chưa chọn địa điểm -> khung địa điểm nháy viền */
+.location-box.attention {
+  animation: location-attention 0.5s ease-in-out 3;
+}
+
+@keyframes location-attention {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 170, 0, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 170, 0, 0.55); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .location-box.attention { animation: none; }
+}
+
+/* Đã huỷ phân tích: tông trung tính (không phải lỗi) */
+.progress-panel.is-cancelled { border-color: rgba(148, 163, 184, 0.45); }
+.is-cancelled .progress-title, .is-cancelled .progress-percent { color: #cbd5e1; }
+.is-cancelled .progress-error { color: #cbd5e1; background: rgba(148, 163, 184, 0.1); border-color: rgba(148, 163, 184, 0.3); }

@@ -1,0 +1,64 @@
+<div class="locations-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><i class="bi bi-person-circle text-cyan"></i> Tài Khoản Của Tôi</h1>
+      <p class="page-subtitle">Thông tin đăng nhập và đổi mật khẩu</p>
+    </div>
+  </div>
+
+  <!-- THÔNG TIN -->
+  <div class="panel">
+    <h3><i class="bi bi-person-vcard"></i> Thông tin tài khoản</h3>
+    @if (user(); as u) {
+      <div class="form-grid">
+        <div class="field field-wide"><span>Họ và tên</span><strong>{{ u.full_name }}</strong></div>
+        <div class="field field-wide"><span>Email</span><strong>{{ u.email }}</strong></div>
+        <div class="field"><span>Vai trò</span><strong>{{ roleLabels[u.role] }}</strong></div>
+        <div class="field"><span>Ngày tạo</span><strong>{{ u.created_at | date: 'dd/MM/yyyy HH:mm' }}</strong></div>
+      </div>
+    }
+  </div>
+
+  <!-- ĐỔI MẬT KHẨU -->
+  <form class="panel" (ngSubmit)="changePassword()" novalidate>
+    <h3><i class="bi bi-key-fill text-amber"></i> Đổi mật khẩu</h3>
+
+    @if (errorMessage()) {
+      <div class="alert alert-error" role="alert"><i class="bi bi-x-octagon-fill"></i> {{ errorMessage() }}</div>
+    }
+    @if (successMessage()) {
+      <div class="alert alert-success" role="status"><i class="bi bi-check-circle-fill"></i> {{ successMessage() }}</div>
+    }
+
+    <div class="form-grid">
+      <label class="field field-wide">
+        <span>Mật khẩu hiện tại <em>*</em></span>
+        <input [type]="showPassword ? 'text' : 'password'" name="currentPassword" autocomplete="current-password"
+               maxlength="128" [(ngModel)]="currentPassword" [disabled]="saving()" />
+      </label>
+      <div class="field field-wide"></div>
+      <label class="field field-wide">
+        <span>Mật khẩu mới <em>*</em></span>
+        <input [type]="showPassword ? 'text' : 'password'" name="newPassword" autocomplete="new-password"
+               maxlength="128" [placeholder]="'Tối thiểu ' + minPassword + ' ký tự'"
+               [(ngModel)]="newPassword" [disabled]="saving()" />
+      </label>
+      <label class="field field-wide">
+        <span>Nhập lại mật khẩu mới <em>*</em></span>
+        <input [type]="showPassword ? 'text' : 'password'" name="confirmPassword" autocomplete="new-password"
+               maxlength="128" [(ngModel)]="confirmPassword" [disabled]="saving()" />
+      </label>
+    </div>
+
+    <div class="form-actions" style="justify-content: space-between; align-items: center;">
+      <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-sub);">
+        <input type="checkbox" name="showPassword" [(ngModel)]="showPassword" /> Hiện mật khẩu
+      </label>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">
+        <i class="bi bi-check-lg"></i> {{ saving() ? 'Đang lưu...' : 'Đổi mật khẩu' }}
+      </button>
+    </div>
+  </form>
+
+</div>

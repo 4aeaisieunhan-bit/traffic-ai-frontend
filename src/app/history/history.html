@@ -1,0 +1,113 @@
+<div class="history-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><i class="bi bi-clock-history text-cyan"></i> Lịch Sử Phân Tích</h1>
+      <p class="page-subtitle">Tất cả các lần phân tích video AI: tiến độ, kết quả, huỷ lần đang chạy và xoá dữ liệu cũ.</p>
+    </div>
+    <div class="header-actions">
+      <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="changeFilter()" aria-label="Lọc theo trạng thái">
+        <option value="">Tất cả trạng thái</option>
+        @for (s of statusOptions; track s) {
+          <option [value]="s">{{ labels[s] }}</option>
+        }
+      </select>
+      <button class="btn btn-secondary" (click)="load()" [disabled]="loading">
+        <i class="bi bi-arrow-clockwise"></i> Làm mới
+      </button>
+      <a class="btn btn-primary" routerLink="/admin/video-analysis"><i class="bi bi-cloud-arrow-up-fill"></i> Phân tích video mới</a>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-error"><i class="bi bi-x-octagon-fill"></i> {{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> {{ successMessage }}</div>
+  }
+
+  <div class="panel">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>VIDEO</th>
+            <th>ĐỊA ĐIỂM</th>
+            <th>TRẠNG THÁI</th>
+            <th class="num">VI PHẠM</th>
+            <th class="num">PHƯƠNG TIỆN</th>
+            <th>THỜI GIAN XỬ LÝ</th>
+            <th>BẮT ĐẦU</th>
+            <th class="actions">THAO TÁC</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of tasks; track t.task_id) {
+            <tr>
+              <td>
+                <strong class="video-name" [title]="t.video_name ?? ''">{{ t.video_name ?? '—' }}</strong>
+                <div class="muted mono">#{{ t.task_id }}</div>
+              </td>
+              <td class="muted">{{ t.location ?? '—' }}</td>
+              <td>
+                <span class="task-status" [attr.data-status]="t.status">{{ labels[t.status] }}</span>
+                @if (t.status === 'processing' || t.status === 'pending') {
+                  <div class="mini-progress" [attr.aria-label]="'Tiến độ ' + t.progress + '%'">
+                    <span [style.width.%]="t.progress"></span>
+                  </div>
+                  <div class="muted small">{{ t.progress | number: '1.0-1' }}% · {{ t.current_frame ?? 0 }}/{{ t.total_frames ?? 0 }} khung hình</div>
+                }
+                @if (t.status === 'failed' && t.error) {
+                  <div class="error-text" [title]="t.error">{{ t.error }}</div>
+                }
+              </td>
+              <td class="num">
+                @if (t.status === 'completed' && t.violations_detected > 0) {
+                  <a class="count-link" routerLink="/admin/violations">{{ t.violations_detected }}</a>
+                } @else {
+                  {{ t.status === 'completed' ? t.violations_detected : '—' }}
+                }
+              </td>
+              <td class="num">{{ t.status === 'completed' ? (t.vehicles_scanned ?? 0) : '—' }}</td>
+              <td class="muted">{{ duration(t) }}</td>
+              <td class="muted">{{ t.created_at | date: 'HH:mm dd/MM/yyyy' }}</td>
+              <td class="actions">
+                @if (t.status === 'completed' && t.output_video_url) {
+                  <a class="icon-btn" [href]="staticUrl + t.output_video_url" target="_blank" rel="noopener" title="Xem video kết quả">
+                    <i class="bi bi-play-btn-fill"></i>
+                  </a>
+                }
+                @if (t.status === 'pending' || t.status === 'processing') {
+                  <button class="icon-btn warn" (click)="cancel(t)" [disabled]="busyId === t.task_id" title="Huỷ phân tích">
+                    <i class="bi bi-stop-circle"></i> Huỷ
+                  </button>
+                } @else if (isAdmin()) {
+                  <button class="icon-btn danger" (click)="remove(t)" [disabled]="busyId === t.task_id" title="Xoá lần phân tích và toàn bộ kết quả">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty">
+                @if (loading) { Đang tải... }
+                @else { Chưa có lần phân tích nào{{ statusFilter ? ' với trạng thái này' : '' }}. }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (pageCount > 1) {
+      <div class="pager">
+        <span class="muted">{{ total }} lần phân tích · trang {{ page + 1 }}/{{ pageCount }}</span>
+        <div>
+          <button class="icon-btn" (click)="goTo(page - 1)" [disabled]="page === 0" aria-label="Trang trước"><i class="bi bi-chevron-left"></i></button>
+          <button class="icon-btn" (click)="goTo(page + 1)" [disabled]="page >= pageCount - 1" aria-label="Trang sau"><i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

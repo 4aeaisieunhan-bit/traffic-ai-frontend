@@ -1,0 +1,235 @@
+<div class="dashboard">
+
+  <!-- =========================
+       PAGE HEADER
+  ========================== -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="title-icon"><i class="bi bi-speedometer2"></i></span> Dashboard Giám Sát AI
+      </h1>
+      <p class="page-subtitle">
+        Hệ thống thị giác máy tính phát hiện vi phạm giao thông tự động từ video
+      </p>
+    </div>
+
+    <div class="header-right-tools">
+      <div class="telemetry-pill">
+        <span class="live-dot"></span>
+        <span>AI VISION ENGINE: SẴN SÀNG</span>
+      </div>
+      <a routerLink="/admin/video-analysis" class="btn btn-primary">
+        <i class="bi bi-cloud-arrow-up-fill"></i> Tải Lên & Phân Tích Video
+      </a>
+    </div>
+  </div>
+
+
+  <!-- =========================
+       HERO STAT CARDS (THỰC TẾ)
+  ========================== -->
+  @if (loadError) {
+    <div style="background: rgba(255, 51, 102, 0.08); border: 1px solid #ff3366; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; color: #ff3366;">
+      <i class="bi bi-x-octagon-fill"></i> {{ loadError }}
+      <button class="btn btn-secondary" style="margin-left: 12px;" (click)="loadStats()">Thử lại</button>
+    </div>
+  }
+
+  <div class="stats-grid">
+
+    <!-- Card 1: Output video gần nhất -->
+    <div class="stat-card">
+      <div class="stat-icon-glow blue-glow"><i class="bi bi-file-earmark-play-fill"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">FRAME ĐÃ XỬ LÝ</span>
+        <h2 class="stat-value">{{ totalFramesProcessed | number }}</h2>
+        <div class="stat-foot">
+          <span class="foot-badge blue">{{ fps }} FPS</span>
+          <span class="foot-sub">Video gần nhất · {{ resolution || '—' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Vehicles Scanned -->
+    <div class="stat-card">
+      <div class="stat-icon-glow cyan-glow"><i class="bi bi-car-front-fill"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">PHƯƠNG TIỆN ĐÃ QUÉT</span>
+        <h2 class="stat-value cyan-text">{{ identifiedVehicles | number }}</h2>
+        <div class="stat-foot">
+          <span class="foot-badge cyan">{{ legitimateTurns }} rẽ hợp lệ</span>
+          <span class="foot-sub">Video gần nhất</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Violations Detected -->
+    <div class="stat-card">
+      <div class="stat-icon-glow rose-glow"><i class="bi bi-shield-fill-x"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">TỔNG VI PHẠM</span>
+        <h2 class="stat-value rose-text">{{ totalViolations }}</h2>
+        <div class="stat-foot">
+          <span class="foot-badge rose">AI phát hiện</span>
+          <span class="foot-sub">Toàn bộ hồ sơ</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Unprocessed / Confirmed -->
+    <div class="stat-card">
+      <div class="stat-icon-glow green-glow"><i class="bi bi-clock-history"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">CHỜ PHÊ DUYỆT</span>
+        <h2 class="stat-value green-text">{{ unprocessedViolations }}</h2>
+        <div class="stat-foot">
+          <span class="foot-badge green">{{ confirmedViolations }} đã xác nhận</span>
+          <span class="foot-sub">Hồ sơ CSGT</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       CHARTS + AI OUTPUT VIDEO STREAM
+  ========================== -->
+  <div class="dashboard-grid">
+
+    <!-- Chart Card -->
+    <div class="dashboard-card chart-card">
+      <div class="card-header">
+        <div>
+          <h3><i class="bi bi-bar-chart-line-fill text-blue"></i> Phân Loại Vi Phạm</h3>
+          <p>Số hồ sơ theo từng loại hành vi vi phạm do AI ghi nhận</p>
+        </div>
+      </div>
+
+      <!-- Animated Bar Chart -->
+      <div class="bar-chart-container">
+        @if (!loading && chartData.length === 0) {
+          <div style="text-align: center; padding: 40px; color: #8a8898;">Chưa có dữ liệu vi phạm</div>
+        }
+        <div class="chart-bars-wrap">
+          @for (item of chartData; track item.label) {
+            <div class="chart-bar-item">
+              <div class="bar-tooltip">{{ item.count }} vi phạm</div>
+              <div class="bar-fill-track">
+                <div class="bar-fill-column" [style.height.%]="item.height">
+                  <span class="bar-glow-top"></span>
+                </div>
+              </div>
+              <span class="bar-label">{{ item.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+
+    <!-- AI Output Video Stream Box -->
+    <div class="dashboard-card camera-card">
+      <div class="card-header">
+        <div>
+          <h3><i class="bi bi-display text-cyan"></i> Video Kết Quả AI (Output Player)</h3>
+          <p>Màn hình video tích hợp HUD nhận diện & Sidebar biển số</p>
+        </div>
+
+        <a routerLink="/admin/video-analysis" class="btn btn-secondary view-all-btn">
+          Tải Video Khác <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      @if (!videoReady) {
+        <div style="padding: 48px 20px; text-align: center; color: #8a8898; background: #14111c; border-radius: 8px;">
+          <i class="bi bi-camera-video-off" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
+          {{ loading ? 'Đang tải...' : 'Chưa có video nào được phân tích' }}
+        </div>
+      } @else {
+      <div style="background: #000; border-radius: 8px; overflow: hidden; position: relative;">
+        <video
+          controls 
+          autoplay 
+          muted 
+          loop 
+          playsinline
+          style="width: 100%; max-height: 280px; display: block; object-fit: contain; background: #000;"
+          [src]="videoUrl"
+        >
+          Trình duyệt không hỗ trợ thẻ video HTML5.
+        </video>
+        <div style="padding: 10px 14px; background: #14111c; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #2a2538; font-size: 12px;">
+          <span style="color: #00e650;"><i class="bi bi-broadcast"></i> OUTPUT: {{ resolution || '—' }} · {{ fps }} FPS</span>
+          <span style="color: #8a8898;">YOLO (6 mô hình) + OCR 2-Pass ANPR</span>
+        </div>
+      </div>
+      }
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       LATEST VIOLATIONS TABLE (THỰC TẾ)
+  ========================== -->
+  <div class="dashboard-card violation-card">
+    <div class="card-header">
+      <div>
+        <h3><i class="bi bi-shield-alert text-rose"></i> 5 Vi Phạm Mới Ghi Nhận</h3>
+        <p>Danh sách các trường hợp phương tiện vi phạm được trích xuất từ video</p>
+      </div>
+
+      <a routerLink="/admin/violations" class="btn btn-secondary view-all-btn">
+        Xem danh sách đầy đủ <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>BIỂN SỐ AI</th>
+            <th>MỐC VIDEO</th>
+            <th>LOẠI VI PHẠM</th>
+            <th>ĐỘ TIN CẬY</th>
+            <th>TRẠNG THÁI</th>
+            <th>HÀNH ĐỘNG</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (viol of latestViolations; track viol.id) {
+            <tr>
+              <td>
+                <span class="license-plate-badge">{{ viol.plate }}</span>
+              </td>
+              <td>
+                <span class="time-text">{{ viol.videoTime }}</span>
+              </td>
+              <td>
+                <span class="violation-badge">{{ viol.type }}</span>
+              </td>
+              <td>
+                <span class="confidence-meter">
+                  <span class="conf-bar" [style.width]="viol.conf"></span>
+                  <strong>{{ viol.conf }}</strong>
+                </span>
+              </td>
+              <td>
+                <span class="status-badge" [class.online]="viol.status === 'Đã xác nhận'" [class.offline]="viol.status === 'Chưa xử lý'">
+                  {{ viol.status }}
+                </span>
+              </td>
+              <td>
+                <a class="action-btn" [routerLink]="['/admin/violations', viol.id]">
+                  Chi tiết <i class="bi bi-chevron-right"></i>
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

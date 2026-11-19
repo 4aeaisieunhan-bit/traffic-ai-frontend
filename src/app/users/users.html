@@ -1,0 +1,90 @@
+<div class="locations-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><i class="bi bi-people-fill text-cyan"></i> Quản Lý Tài Khoản</h1>
+      <p class="page-subtitle">Khóa / mở khóa, phân quyền và đặt lại mật khẩu khi người dùng quên mật khẩu</p>
+    </div>
+    <button class="btn btn-secondary" (click)="load()"><i class="bi bi-arrow-clockwise"></i> Làm mới</button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-error" role="alert"><i class="bi bi-x-octagon-fill"></i> {{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success" role="status"><i class="bi bi-check-circle-fill"></i> {{ successMessage }}</div>
+  }
+  @if (resetResult) {
+    <div class="alert alert-success" role="status">
+      <i class="bi bi-key-fill"></i>
+      Mật khẩu tạm cho <strong>{{ resetResult.email }}</strong>:
+      <code style="font-size: 16px; padding: 2px 8px; margin: 0 6px; background: rgba(0,0,0,0.3); border-radius: 4px; color: #fff;">{{ resetResult.password }}</code>
+      <button class="icon-btn" type="button" (click)="copyPassword()"><i class="bi bi-clipboard"></i> Sao chép</button>
+      <div style="margin-top: 6px; font-size: 13px; opacity: 0.85;">
+        Mật khẩu này chỉ hiển thị một lần. Hãy gửi cho người dùng và nhắc họ đổi mật khẩu ở trang "Tài khoản" sau khi đăng nhập.
+      </div>
+    </div>
+  }
+
+  <div class="panel">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>HỌ TÊN</th>
+            <th>EMAIL</th>
+            <th>VAI TRÒ</th>
+            <th>TRẠNG THÁI</th>
+            <th class="num">PHIÊN ĐANG MỞ</th>
+            <th>NGÀY TẠO</th>
+            <th class="actions">THAO TÁC</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of users; track u.id) {
+            <tr>
+              <td>
+                <strong>{{ u.full_name }}</strong>
+                @if (isMe(u)) {
+                  <span class="muted" style="margin-left: 4px;">(bạn)</span>
+                }
+              </td>
+              <td class="muted">{{ u.email }}</td>
+              <td>
+                <select [value]="u.role" (change)="setRole(u, $any($event.target).value)"
+                        [disabled]="isMe(u) || busyId === u.id"
+                        style="padding: 6px 8px; border-radius: 6px; background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-subtle);">
+                  <option value="officer">{{ roleLabels.officer }}</option>
+                  <option value="admin">{{ roleLabels.admin }}</option>
+                </select>
+              </td>
+              <td>
+                <span style="white-space: nowrap;" [style.color]="u.is_active ? 'var(--emerald-green)' : 'var(--rose-red)'">
+                  <i class="bi" [class.bi-check-circle-fill]="u.is_active" [class.bi-lock-fill]="!u.is_active"></i>
+                  {{ u.is_active ? 'Hoạt động' : 'Đã khóa' }}
+                </span>
+              </td>
+              <td class="num">{{ u.active_sessions }}</td>
+              <td class="muted">{{ u.created_at | date: 'dd/MM/yyyy' }}</td>
+              <td class="actions">
+                <button class="icon-btn" (click)="resetPassword(u)" [disabled]="isMe(u) || busyId === u.id"
+                        [title]="isMe(u) ? 'Dùng trang Tài khoản để đổi mật khẩu của bạn' : 'Sinh mật khẩu tạm'">
+                  <i class="bi bi-key"></i> Đặt lại MK
+                </button>
+                <button class="icon-btn" [class.danger]="u.is_active" (click)="toggleActive(u)"
+                        [disabled]="isMe(u) || busyId === u.id"
+                        [title]="isMe(u) ? 'Không thể tự khóa tài khoản của mình' : ''">
+                  <i class="bi" [class.bi-lock]="u.is_active" [class.bi-unlock]="!u.is_active"></i>
+                  {{ u.is_active ? 'Khóa' : 'Mở khóa' }}
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7" class="empty">{{ loading ? 'Đang tải...' : 'Chưa có tài khoản nào' }}</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

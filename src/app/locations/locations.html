@@ -1,0 +1,109 @@
+<div class="locations-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><i class="bi bi-geo-alt-fill text-rose"></i> Quản Lý Địa Điểm</h1>
+      <p class="page-subtitle">Địa điểm giám sát giao thông. Mỗi video upload phải được gắn với một địa điểm.</p>
+    </div>
+    <button class="btn btn-secondary" (click)="load()">
+      <i class="bi bi-arrow-clockwise"></i> Làm mới
+    </button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-error"><i class="bi bi-x-octagon-fill"></i> {{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> {{ successMessage }}</div>
+  }
+
+  <!-- FORM THÊM / SỬA -->
+  <form class="panel" (ngSubmit)="save()">
+    <h3>
+      @if (editingId === null) {
+        <i class="bi bi-plus-circle-fill text-cyan"></i> Thêm địa điểm mới
+      } @else {
+        <i class="bi bi-pencil-square text-amber"></i> Sửa địa điểm
+      }
+    </h3>
+
+    <div class="form-grid">
+      <label class="field field-wide">
+        <span>Tên địa điểm <em>*</em></span>
+        <input type="text" name="name" [(ngModel)]="form.name" maxlength="255" required
+               placeholder="VD: Ngã tư Láng - Đường Láng" />
+      </label>
+      <label class="field field-wide">
+        <span>Địa chỉ</span>
+        <input type="text" name="address" [(ngModel)]="form.address" maxlength="255"
+               placeholder="VD: Quận Đống Đa, Hà Nội" />
+      </label>
+      <label class="field">
+        <span>Vĩ độ (latitude)</span>
+        <input type="number" name="latitude" [(ngModel)]="form.latitude" step="any" min="-90" max="90" placeholder="21.0245" />
+      </label>
+      <label class="field">
+        <span>Kinh độ (longitude)</span>
+        <input type="number" name="longitude" [(ngModel)]="form.longitude" step="any" min="-180" max="180" placeholder="105.8412" />
+      </label>
+    </div>
+
+    <div class="form-actions">
+      @if (editingId !== null) {
+        <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Hủy</button>
+      }
+      <button type="submit" class="btn btn-primary" [disabled]="!form.name.trim() || saving">
+        <i class="bi bi-check-lg"></i>
+        {{ saving ? 'Đang lưu...' : (editingId === null ? 'Thêm địa điểm' : 'Lưu thay đổi') }}
+      </button>
+    </div>
+  </form>
+
+  <!-- DANH SÁCH -->
+  <div class="panel">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>TÊN ĐỊA ĐIỂM</th>
+            <th>ĐỊA CHỈ</th>
+            <th>TỌA ĐỘ</th>
+            <th class="num">VIDEO</th>
+            <th class="num">VI PHẠM</th>
+            <th class="actions">THAO TÁC</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (loc of locations; track loc.id) {
+            <tr [class.editing]="loc.id === editingId">
+              <td><strong>{{ loc.name }}</strong></td>
+              <td class="muted">{{ loc.address || '—' }}</td>
+              <td class="muted mono">
+                @if (loc.latitude !== null && loc.longitude !== null) {
+                  {{ loc.latitude }}, {{ loc.longitude }}
+                } @else { — }
+              </td>
+              <td class="num">{{ loc.video_count }}</td>
+              <td class="num">{{ loc.violation_count }}</td>
+              <td class="actions">
+                <button class="icon-btn" title="Sửa" (click)="startEdit(loc)"><i class="bi bi-pencil"></i> Sửa</button>
+                <button class="icon-btn danger" (click)="remove(loc)" [disabled]="loc.video_count > 0"
+                        [title]="loc.video_count > 0 ? 'Không thể xóa: địa điểm đang có video' : 'Xóa'">
+                  <i class="bi bi-trash"></i> Xóa
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty">
+                {{ loading ? 'Đang tải...' : 'Chưa có địa điểm nào. Hãy thêm địa điểm đầu tiên ở form phía trên.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

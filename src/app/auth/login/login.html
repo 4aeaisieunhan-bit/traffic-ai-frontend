@@ -1,0 +1,89 @@
+<div class="login-page">
+
+  <form class="login-card" (ngSubmit)="login()" novalidate>
+
+    <!-- Logo -->
+    <a class="logo" routerLink="/">
+      <img src="traffic-ai-logo.png" alt="Traffic AI Logo" class="auth-logo-img">
+      <span>Traffic AI</span>
+    </a>
+
+    <h1>Đăng nhập</h1>
+
+    <p class="subtitle">
+      Đăng nhập vào hệ thống giám sát giao thông
+    </p>
+
+    @if (infoMessage()) {
+      <div class="auth-alert info" role="status">{{ infoMessage() }}</div>
+    }
+    @if (errorMessage()) {
+      <div class="auth-alert error" role="alert">{{ errorMessage() }}</div>
+    }
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="login-email">Email</label>
+      <input
+        id="login-email"
+        name="email"
+        type="email"
+        placeholder="Nhập email"
+        autocomplete="username"
+        [(ngModel)]="email"
+        [disabled]="loading()"
+        required
+      >
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="login-password">Mật khẩu</label>
+      <div class="password-field">
+        <input
+          id="login-password"
+          name="password"
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Nhập mật khẩu"
+          autocomplete="current-password"
+          [(ngModel)]="password"
+          [disabled]="loading()"
+          required
+        >
+        <button type="button" class="toggle-password" (click)="showPassword = !showPassword"
+                [attr.aria-label]="showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'">
+          <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Remember -->
+    <div class="form-options">
+      <label class="remember">
+        <input type="checkbox" name="remember" [(ngModel)]="remember" [disabled]="loading()">
+        <span>Ghi nhớ đăng nhập (30 ngày)</span>
+      </label>
+      <a href="#" (click)="$event.preventDefault(); showForgot = !showForgot">Quên mật khẩu?</a>
+    </div>
+
+    @if (showForgot) {
+      <div class="auth-alert info" role="status">
+        Vui lòng liên hệ <strong>quản trị viên</strong> để được cấp mật khẩu tạm.
+        Sau khi đăng nhập, hãy vào <strong>Tài khoản &amp; đổi mật khẩu</strong> để đặt mật khẩu mới.
+      </div>
+    }
+
+    <!-- Login button -->
+    <button class="login-btn" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+    </button>
+
+    <!-- Register -->
+    <div class="register">
+      <span>Chưa có tài khoản?</span>
+      <a routerLink="/register">Đăng ký</a>
+    </div>
+
+  </form>
+
+</div>

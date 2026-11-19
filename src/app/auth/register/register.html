@@ -1,0 +1,74 @@
+<div class="register-page">
+
+  <form class="register-card" (ngSubmit)="register()" novalidate>
+
+    <!-- Logo -->
+    <a class="logo" routerLink="/">
+      <img src="traffic-ai-logo.png" alt="Traffic AI Logo" class="auth-logo-img">
+      <span>Traffic AI</span>
+    </a>
+
+    <h1>Đăng ký tài khoản</h1>
+
+    <p class="subtitle">
+      Tạo tài khoản cán bộ để sử dụng hệ thống giám sát giao thông
+    </p>
+
+    @if (errorMessage()) {
+      <div class="auth-alert error" role="alert">{{ errorMessage() }}</div>
+    }
+
+    <!-- Full name -->
+    <div class="form-group">
+      <label for="reg-name">Họ và tên</label>
+      <input id="reg-name" name="fullName" type="text" placeholder="Nhập họ và tên"
+             autocomplete="name" maxlength="100"
+             [(ngModel)]="fullName" [disabled]="loading()" required>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="reg-email">Email</label>
+      <input id="reg-email" name="email" type="email" placeholder="Nhập email"
+             autocomplete="email" maxlength="255"
+             [(ngModel)]="email" [disabled]="loading()" required>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="reg-password">Mật khẩu</label>
+      <div class="password-field">
+        <input id="reg-password" name="password" [type]="showPassword ? 'text' : 'password'"
+               [placeholder]="'Tối thiểu ' + minPassword + ' ký tự'"
+               autocomplete="new-password" maxlength="128"
+               [(ngModel)]="password" [disabled]="loading()" required>
+        <button type="button" class="toggle-password" (click)="showPassword = !showPassword"
+                [attr.aria-label]="showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'">
+          <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Confirm password -->
+    <div class="form-group">
+      <label for="reg-confirm">Xác nhận mật khẩu</label>
+      <input id="reg-confirm" name="confirmPassword" [type]="showPassword ? 'text' : 'password'"
+             placeholder="Nhập lại mật khẩu" autocomplete="new-password" maxlength="128"
+             [(ngModel)]="confirmPassword" [disabled]="loading()" required>
+      @if (confirmPassword && password !== confirmPassword) {
+        <small class="field-hint error">Mật khẩu xác nhận chưa khớp</small>
+      }
+    </div>
+
+    <button class="register-btn" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Đang tạo tài khoản...' : 'Đăng ký' }}
+    </button>
+
+    <div class="login-link">
+      <span>Đã có tài khoản?</span>
+      <a routerLink="/login">Đăng nhập</a>
+    </div>
+
+  </form>
+
+</div>

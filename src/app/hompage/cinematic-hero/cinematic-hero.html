@@ -1,0 +1,49 @@
+<div class="cinematic" #host
+     role="img"
+     aria-label="Mô phỏng 3D: siêu xe drift vượt vạch dừng khi đèn đỏ, camera giám sát AI phát hiện và ghi nhận vi phạm">
+
+  <canvas #canvas class="scene-canvas"></canvas>
+
+  <!-- Lớp phủ tối bên trái + mép dưới: chữ hero luôn dễ đọc trên nền chuyển động -->
+  <div class="scrim" aria-hidden="true"></div>
+
+  <!-- HUD camera giám sát (engine cập nhật trực tiếp mỗi khung hình) -->
+  <div class="hud" aria-hidden="true">
+    <div class="cctv">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <div class="row top-right"><span class="rec"><i></i>REC</span><span>CAM-07</span><span class="js-clock">00:12:07.00</span></div>
+      <div class="row bottom-right">
+        <span class="chip ai">AI ANALYSIS · REPLAY 0.5×</span>
+        <span class="js-speed">SPEED — KM/H</span>
+        <span class="chip js-track">SCANNING</span>
+      </div>
+      <div class="row freeze-row"><span class="chip red js-freeze">❚❚ FREEZE FRAME · EVIDENCE SAVED</span></div>
+    </div>
+
+    <div class="det-box"><span class="det-tag">VEHICLE 0.98</span><span class="det-meta">ID #017</span></div>
+
+    <div class="alert"><div class="alert-head"><b>⚠</b> TRAFFIC VIOLATION DETECTED</div></div>
+    <div class="alert-info">
+      <span>TYPE</span><strong>RED LIGHT · STOP LINE</strong>
+      <span>VEHICLE</span><strong>SUPERCAR · ID #017</strong>
+      <span>SPEED</span><strong class="js-alert-speed">— KM/H</strong>
+      <span>CONFIDENCE</span><strong>98.4%</strong>
+    </div>
+
+    <div class="flash"></div>
+    <div class="fade"></div>
+  </div>
+
+  @if (status() === 'loading') {
+    <div class="loading" aria-hidden="true"><span></span></div>
+  }
+
+  @if (status() === 'ready') {
+    <button type="button" class="motion-btn" (click)="toggle()"
+            [attr.aria-label]="playing() ? 'Tạm dừng mô phỏng 3D' : 'Phát mô phỏng 3D'"
+            [title]="playing() ? 'Tạm dừng mô phỏng 3D' : (systemReducedMotion() ? 'Máy bạn đang tắt hiệu ứng chuyển động — bấm để phát' : 'Phát mô phỏng 3D')">
+      <i class="bi" [class.bi-pause-fill]="playing()" [class.bi-play-fill]="!playing()"></i>
+      @if (!playing()) { <span>Phát mô phỏng 3D</span> }
+    </button>
+  }
+</div>

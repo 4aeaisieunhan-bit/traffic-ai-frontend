@@ -1,0 +1,340 @@
+.detail-page {
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-icon-glow {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.status-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-sub);
+  letter-spacing: 0.8px;
+}
+
+.status-left h2 {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.amber-text { color: #fbbf24; }
+
+.violation-id {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.violation-id strong {
+  color: var(--text-main);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.card {
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  margin-bottom: 20px;
+}
+
+.card-header h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.card-header p {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+
+.evidence-large-screen {
+  width: 100%;
+  height: 300px;
+  border-radius: 14px;
+  background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+  position: relative;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  overflow: hidden;
+
+}
+
+.ai-box {
+  position: absolute;
+  border: 2px solid;
+  border-radius: 6px;
+}
+
+.car-box { top: 25%; left: 20%; width: 240px; height: 160px; border-color: #06b6d4; }
+.plate-box { bottom: 20%; left: 35%; width: 120px; height: 45px; border-color: #f59e0b; }
+.light-box { top: 15%; right: 15%; width: 50px; height: 100px; border-color: #f43f5e; }
+
+.box-tag {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+
+}
+
+.box-tag.cyan { background: #06b6d4; color: #000; }
+.box-tag.yellow { background: #f59e0b; color: #000; }
+.box-tag.red { background: #f43f5e; color: #fff; }
+
+.evidence-watermark {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  font-family: monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.evidence-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+}
+
+.info-row:last-child { border-bottom: none; }
+
+.info-label { color: var(--text-sub); }
+
+.license-plate-large {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 800;
+  color: #f8fafc;
+  background: #1e293b;
+  border: 1px solid #fbbf24;
+  padding: 4px 12px;
+  border-radius: 6px;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.3);
+}
+
+.green-text { color: #34d399 !important; }
+.blue-text { color: #60a5fa !important; }
+
+.ai-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.ai-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ai-icon {
+  font-size: 20px;
+}
+
+.ai-item-left strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.ai-item-left small {
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+.ai-score {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.bottom-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+}
+
+.confirm-btn, .reject-btn {
+  padding: 12px 24px;
+  font-size: 14px;
+}
+
+/* Từ chối vì người lái có đội mũ (AI nhầm, VD mũ đen) */
+.helmet-wrong-btn {
+  background: rgba(168, 85, 247, 0.15);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.6);
+}
+
+.helmet-wrong-btn:hover {
+  background: rgba(168, 85, 247, 0.3);
+  color: #fff;
+}
+
+/* Ảnh cận cảnh người vi phạm (lỗi không đội mũ bảo hiểm) */
+.subject-crop-bar {
+  margin-top: 14px;
+  padding: 12px;
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  background: #1c1218;
+  border: 1px solid rgba(255, 51, 102, 0.45);
+  border-radius: 8px;
+}
+
+.subject-crop-link {
+  flex: 0 0 auto;
+  display: block;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid #ff3366;
+  background: #000;
+}
+
+.subject-crop-link img {
+  display: block;
+  height: 200px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+}
+
+.subject-crop-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.subject-crop-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff5c85;
+  letter-spacing: 0.5px;
+}
+
+.subject-crop-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #a8a4b8;
+  line-height: 1.5;
+}
+
+.subject-crop-meta {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #a8a4b8;
+}
+
+.subject-crop-meta strong {
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .subject-crop-bar {
+    flex-direction: column;
+  }
+
+  .subject-crop-link img {
+    height: auto;
+    width: 100%;
+    max-width: none;
+    max-height: 320px;
+  }
+}
