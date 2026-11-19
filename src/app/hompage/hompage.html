@@ -1,373 +1,137 @@
-<div class="homepage">
+<div class="home">
 
-  <!-- =========================
-       HEADER
-  ========================== -->
-  <header class="homepage-header">
+  <!-- ========================= HEADER ========================= -->
+  <header class="home-header">
+    <div class="wrap header-row">
+      <a routerLink="/" class="brand" aria-label="Traffic AI">
+        <svg class="brand-mark" viewBox="0 0 16 24" aria-hidden="true">
+          <rect x="1" y="1" width="14" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+          <circle cx="8" cy="6.5" r="2.25" fill="currentColor" />
+          <circle cx="8" cy="12" r="2.25" fill="currentColor" opacity="0.35" />
+          <circle cx="8" cy="17.5" r="2.25" fill="currentColor" opacity="0.35" />
+        </svg>
+        <span>Traffic AI</span>
+      </a>
 
-    <div class="logo">
-      <img src="traffic-ai-logo.png" alt="Traffic AI" class="logo-img">
-      Traffic AI
+      <nav class="header-nav">
+        <a routerLink="/login" class="nav-link">Đăng nhập</a>
+        <a routerLink="/register" class="hbtn hbtn-secondary hbtn-sm">Đăng ký</a>
+      </nav>
     </div>
-
-    <nav class="header-nav">
-
-      <a routerLink="/login" class="login-btn">
-        Đăng nhập
-      </a>
-
-      <a routerLink="/register" class="register-btn">
-        Đăng ký
-      </a>
-
-    </nav>
-
   </header>
 
 
-  <!-- =========================
-       HERO
-  ========================== -->
+  <!-- ========================= HERO ========================= -->
   <section class="hero">
+    <div class="wrap">
 
-    <!-- Nền 3D điện ảnh tràn màn hình: siêu xe drift vượt đèn đỏ -> camera giám sát AI phát hiện vi phạm -->
-    <app-cinematic-hero />
-
-    <div class="hero-content">
-
-      <span class="hero-label">
-        AI TRAFFIC MONITORING
-      </span>
-
-      <h1>
-        SMART TRAFFIC
-        <br>
-        MONITORING SYSTEM
-      </h1>
-
-      <p>
-        Hệ thống AI giám sát giao thông,
-        phát hiện phương tiện vượt đèn đỏ
-        và nhận diện biển số xe vi phạm.
-      </p>
-
-      <div class="hero-actions">
-
-        <a
-          routerLink="/login"
-          class="primary-btn"
-        >
-          Bắt đầu giám sát
-        </a>
-
-        <a
-          routerLink="/admin/dashboard"
-          class="secondary-btn"
-        >
-          Xem hệ thống
-        </a>
-
+      <div class="hero-text">
+        <h1>Biến video camera ngã tư thành hồ sơ vi phạm có biển số</h1>
+        <p class="hero-sub">
+          Hệ thống theo dõi quỹ đạo từng xe qua vạch dừng, đối chiếu với đèn tín hiệu,
+          phát hiện người không đội mũ bảo hiểm và đọc biển số để cán bộ duyệt
+        </p>
+        <div class="hero-actions">
+          <a routerLink="/login" class="hbtn hbtn-primary">Đăng nhập để phân tích</a>
+          <a routerLink="/admin/dashboard" class="hbtn hbtn-secondary">Xem bảng điều khiển</a>
+        </div>
       </div>
-
     </div>
-
-
   </section>
 
 
-  <!-- =========================
-       STATISTICS
-  ========================== -->
-  <section class="statistics">
-
-    <div class="stat-card">
-
-      <span class="stat-icon">
-        📍
-      </span>
-
-      <div>
-        <strong>{{ fmt(stats()?.locations) }}</strong>
-        <span>Địa điểm giám sát</span>
-      </div>
-
-    </div>
-
-
-    <div class="stat-card">
-
-      <span class="stat-icon">
-        🚗
-      </span>
-
-      <div>
-        <strong>{{ fmt(stats()?.vehicles_scanned) }}</strong>
-        <span>Phương tiện đã quét</span>
-      </div>
-
-    </div>
-
-
-    <div class="stat-card violation-stat">
-
-      <span class="stat-icon">
-        🚨
-      </span>
-
-      <div>
-        <strong>{{ fmt(stats()?.violations) }}</strong>
-        <span>Vi phạm phát hiện</span>
-      </div>
-
-    </div>
-
-
-    <div class="stat-card">
-
-      <span class="stat-icon">
-        🎯
-      </span>
-
-      <div>
-        <strong>{{ stats()?.avg_confidence != null ? stats()!.avg_confidence + '%' : '—' }}</strong>
-        <span>Độ tin cậy AI trung bình</span>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       AI FEATURES
-  ========================== -->
+  <!-- ========================= TÍNH NĂNG ========================= -->
   <section class="features">
+    <div class="wrap features-grid">
 
-    <div class="section-header">
+      <div class="section-head">
+        <h2>Mỗi vi phạm đi kèm bằng chứng</h2>
+        <p>
+          Hệ thống chỉ ghi nhận khi đủ dữ liệu qua nhiều khung hình, và lưu lại ảnh hiện trường,
+          ảnh biển số cùng ảnh cận cảnh để cán bộ kiểm tra trước khi xử lý
+        </p>
+      </div>
 
-      <span class="section-label">
-        AI TECHNOLOGY
-      </span>
-
-      <h2>
-        Intelligent Traffic Detection
-      </h2>
-
-      <p>
-        Hệ thống sử dụng AI để tự động phân tích
-        và phát hiện các phương tiện vi phạm giao thông.
-      </p>
+      <ul class="feature-list">
+        <li>
+          <i class="bi bi-film" aria-hidden="true"></i>
+          <div>
+            <h3>Phân tích video</h3>
+            <p>Tải video từ camera lên, hệ thống xử lý từng khung hình và xuất video kết quả có đánh dấu</p>
+          </div>
+        </li>
+        <li>
+          <i class="bi bi-bezier2" aria-hidden="true"></i>
+          <div>
+            <h3>Theo dõi quỹ đạo</h3>
+            <p>Mỗi xe có một mã theo dõi riêng, chỉ xe đi từ làn chờ qua vạch dừng mới được xét</p>
+          </div>
+        </li>
+        <li>
+          <i class="bi bi-stoplights" aria-hidden="true"></i>
+          <div>
+            <h3>Vượt đèn đỏ</h3>
+            <p>Đối chiếu hướng đi thẳng, rẽ trái, rẽ phải với đèn và mũi tên tại lúc xe qua vạch</p>
+          </div>
+        </li>
+        <li>
+          <i class="bi bi-person-exclamation" aria-hidden="true"></i>
+          <div>
+            <h3>Không đội mũ bảo hiểm</h3>
+            <p>Chỉ kết luận khi thấy rõ đầu trần ở nhiều khung hình, tránh nhầm mũ màu tối</p>
+          </div>
+        </li>
+        <li>
+          <i class="bi bi-card-text" aria-hidden="true"></i>
+          <div>
+            <h3>Đọc biển số</h3>
+            <p>Biển số được bình chọn qua nhiều lần đọc và lưu kèm ảnh cắt rõ nhất</p>
+          </div>
+        </li>
+      </ul>
 
     </div>
-
-
-    <div class="feature-grid">
-
-      <!-- Feature 1 -->
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          🎬
-        </div>
-
-        <h3>
-          Video Analysis
-        </h3>
-
-        <p>
-          Tải video giao thông lên, AI phân tích
-          từng khung hình và xuất video kết quả.
-        </p>
-
-      </div>
-
-
-      <!-- Feature 2 -->
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          🚗
-        </div>
-
-        <h3>
-          Vehicle Detection
-        </h3>
-
-        <p>
-          AI phát hiện và theo dõi phương tiện
-          trong video giao thông.
-        </p>
-
-      </div>
-
-
-      <!-- Feature 3 -->
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          🚨
-        </div>
-
-        <h3>
-          Red Light Detection
-        </h3>
-
-        <p>
-          Phát hiện phương tiện vượt đèn đỏ
-          dựa trên trạng thái đèn giao thông.
-        </p>
-
-      </div>
-
-
-      <!-- Feature 4 -->
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          🔤
-        </div>
-
-        <h3>
-          License Plate OCR
-        </h3>
-
-        <p>
-          Nhận diện biển số xe của phương tiện
-          được phát hiện vi phạm.
-        </p>
-
-      </div>
-
-    </div>
-
   </section>
 
 
-  <!-- =========================
-       PROCESS
-  ========================== -->
+  <!-- ========================= QUY TRÌNH ========================= -->
   <section class="process">
+    <div class="wrap">
+      <h2>Quy trình phát hiện vi phạm</h2>
 
-    <div class="section-header">
-
-      <span class="section-label">
-        HOW IT WORKS
-      </span>
-
-      <h2>
-        Quy trình phát hiện vi phạm
-      </h2>
-
+      <ol class="steps">
+        <li>
+          <span class="step-no mono">01</span>
+          <h3>Thu thập video</h3>
+          <p>Video từ camera ngã tư được tải lên hệ thống</p>
+        </li>
+        <li>
+          <span class="step-no mono">02</span>
+          <h3>Phát hiện phương tiện</h3>
+          <p>Nhận diện và theo dõi từng xe qua các khung hình</p>
+        </li>
+        <li class="step-stop">
+          <span class="step-no mono">03</span>
+          <h3>Xác định vi phạm</h3>
+          <p>Xe qua vạch dừng khi đèn đỏ, hoặc người lái không đội mũ</p>
+        </li>
+        <li>
+          <span class="step-no mono">04</span>
+          <h3>Lập hồ sơ</h3>
+          <p>Đọc biển số, lưu ảnh bằng chứng để cán bộ duyệt</p>
+        </li>
+      </ol>
     </div>
-
-
-    <div class="process-flow">
-
-      <div class="process-item">
-
-        <div class="process-number">
-          01
-        </div>
-
-        <h3>
-          Camera
-        </h3>
-
-        <p>
-          Thu thập video giao thông
-        </p>
-
-      </div>
-
-
-      <div class="process-arrow">
-        →
-      </div>
-
-
-      <div class="process-item">
-
-        <div class="process-number">
-          02
-        </div>
-
-        <h3>
-          AI Detection
-        </h3>
-
-        <p>
-          Phát hiện phương tiện
-        </p>
-
-      </div>
-
-
-      <div class="process-arrow">
-        →
-      </div>
-
-
-      <div class="process-item">
-
-        <div class="process-number">
-          03
-        </div>
-
-        <h3>
-          Violation
-        </h3>
-
-        <p>
-          Xác định hành vi vượt đèn đỏ
-        </p>
-
-      </div>
-
-
-      <div class="process-arrow">
-        →
-      </div>
-
-
-      <div class="process-item">
-
-        <div class="process-number">
-          04
-        </div>
-
-        <h3>
-          License Plate
-        </h3>
-
-        <p>
-          Nhận diện biển số xe
-        </p>
-
-      </div>
-
-    </div>
-
   </section>
 
 
-  <!-- =========================
-       FOOTER
-  ========================== -->
-  <footer class="homepage-footer">
-
-    <div class="footer-logo">
-      <img src="traffic-ai-logo.png" alt="Traffic AI" class="footer-logo-img">
-      Traffic AI
+  <!-- ========================= FOOTER ========================= -->
+  <footer class="home-footer">
+    <div class="wrap footer-row">
+      <span class="brand brand-sm">Traffic AI</span>
+      <span class="muted">Phát hiện vi phạm giao thông từ video camera</span>
+      <span class="muted mono">© {{ year }}</span>
     </div>
-
-    <p>
-      AI Traffic Monitoring & Violation Detection System
-    </p>
-
-    <span>
-      © 2026 Traffic AI
-    </span>
-
   </footer>
 
 </div>
